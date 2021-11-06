@@ -8,9 +8,6 @@ import javax.validation.constraints.NotBlank;
 public class LoginDto {
     @NotBlank(message = "Vui lòng nhập tên đăng nhập")
     private String username;
-
     @NotBlank(message = "Vui lòng nhập mật khẩu")
     private String password;
-
-    private String companyId;
 }

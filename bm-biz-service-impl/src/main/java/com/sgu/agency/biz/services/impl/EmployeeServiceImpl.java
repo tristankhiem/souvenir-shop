@@ -1,6 +1,5 @@
 package com.sgu.agency.biz.services.impl;
 
-import com.sgu.agency.common.enums.*;
 import com.sgu.agency.common.utils.BCryptHelper;
 import com.sgu.agency.common.utils.RandomTextHelper;
 import com.sgu.agency.common.utils.UUIDHelper;
@@ -54,8 +53,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public EmployeesDto getEmployeeByEmail(String email, String agencyId) {
-        Employees employee = employeesRepository.getEmployeeByEmail(email, agencyId);
+    public EmployeesDto getEmployeeByEmail(String email) {
+        Employees employee = employeesRepository.getEmployeeByEmail(email);
         return IEmployeesDtoMapper.INSTANCE.toEmployeesDto(employee);
     }
 
@@ -84,21 +83,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             Employees employees = IEmployeesDtoMapper.INSTANCE.toEmployees(employeeFullDto);
 
             employees.setId(UUIDHelper.generateType4UUID().toString());
-            employees.setBlockedStatus(BlockStatusEnum.APPROVED);
             Employees createdEmployee = employeesRepository.save(employees);
-
-            for(RoleDetailFullDto detail : employeeFullDto.getRoleDetails()) {
-                if (detail.getRole() == null || detail.getRole().getId() == null
-                        || detail.getRole().getId().isEmpty()) {
-                    continue;
-                }
-
-                RoleDetail tempDetail = IRoleDetailDtoMapper.INSTANCE.toRoleDetailFull(detail);
-                tempDetail.setId(UUIDHelper.generateType4UUID().toString());
-                tempDetail.setEmployee(createdEmployee);
-
-                roleDetailRepository.save(tempDetail);
-            }
 
             employeeFullDto.setId(createdEmployee.getId());
             return employeeFullDto;
@@ -120,34 +105,6 @@ public class EmployeeServiceImpl implements IEmployeeService {
             // collect role detail was removed.
             List<RoleDetail> roleDetails = roleDetailRepository.getDetailsByEmployeeId(employeeFullDto.getId());
             List<String> detailDelete = new ArrayList<>();
-            for(RoleDetail item : roleDetails) {
-                if (item.getId() == null || item.getId().isEmpty()) {
-                    continue;
-                }
-
-                int index = employeeFullDto.getRoleDetails().stream().map(t -> t.getId()).collect(Collectors.toList()).indexOf(item.getId());
-                int isExist = detailDelete.indexOf(item.getId());
-                if (index == -1 && isExist == -1) {
-                    detailDelete.add(item.getId());
-                }
-            }
-
-            for(String id : detailDelete) {
-                roleDetailRepository.deleteById(id);
-            }
-
-            for(RoleDetailFullDto roleDetailDto : employeeFullDto.getRoleDetails()) {
-                if (roleDetailDto.getId() == null || roleDetailDto.getId().isEmpty()) {
-                    EmployeesDto employeesDto = new EmployeesDto();
-                    employeesDto.setId(employeeFullDto.getId());
-
-                    roleDetailDto.setId(UUIDHelper.generateType4UUID().toString());
-                    roleDetailDto.setEmployee(employeesDto);
-                }
-                RoleDetail roleDetail = IRoleDetailDtoMapper.INSTANCE.toRoleDetailFull(roleDetailDto);
-                roleDetail = roleDetailRepository.save(roleDetail);
-                roleDetailDto = IRoleDetailDtoMapper.INSTANCE.toRoleDetailFullDto(roleDetail);
-            }
 
             return employeeFullDto;
         } catch (Exception ex) {
@@ -162,9 +119,6 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public boolean deleteEmployee(String id) {
         try {
             EmployeeFullDto employeeFull = this.getEmployeeFullById(id);
-            for(RoleDetailFullDto detailDto : employeeFull.getRoleDetails()) {
-                roleDetailRepository.deleteById(detailDto.getId());
-            }
             employeesRepository.deleteById(id);
             return true;
         }  catch (Exception ex) {
@@ -215,7 +169,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             List<RoleDetail> details = roleDetailRepository.getDetailsByEmployeeId(employee.getId());
             EmployeeFullDto employeeDto = IEmployeesDtoMapper.INSTANCE.toEmployeeFullDto(employee);
             List<RoleDetailFullDto> detailDto = IRoleDetailDtoMapper.INSTANCE.toRoleDetailFullListDto(details);
-            employeeDto.setRoleDetails(detailDto);
+            // employeeDto.setRoleDetails(detailDto);
             return employeeDto;
         } catch (Exception ex) {
             logger.error(ex.getMessage());
@@ -225,36 +179,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
     @Override
     @Transactional
-    public EmployeeFullDto getEmployeeFull(String email, String companyId) {
-        Employees employee = employeesRepository.getEmployee(email, companyId);
-        EmployeeFullDto employeeFullDto =IEmployeesDtoMapper.INSTANCE.toEmployeeFullDto(employee);
+    public EmployeeFullDto getEmployeeFull(String email) {
+        Employees employee = employeesRepository.getEmployee(email);
+        EmployeeFullDto employeeFullDto = IEmployeesDtoMapper.INSTANCE.toEmployeeFullDto(employee);
         if (employeeFullDto == null) {
             return employeeFullDto;
         }
-        employeeFullDto = getRoleDetails(employeeFullDto);
-
-        return employeeFullDto;
-    }
-
-    private EmployeeFullDto getRoleDetails(EmployeeFullDto employeeFullDto) {
-        employeeFullDto.setRoleDetails(new ArrayList<>());
-        List<RoleDetail> roleDetails = roleDetailRepository.getDetailsByEmployeeId(employeeFullDto.getId());
-        if(roleDetails != null && roleDetails.size() > 0) {
-            for (RoleDetail item : roleDetails) {
-                RoleDetailFullDto roleDetailDto = IRoleDetailDtoMapper.INSTANCE.toRoleDetailFullDto(item);
-                List<GrantPermission> grantPermissions = grantPermissionRepository.getRoleId(item.getRole().getId());
-                if (grantPermissions == null || grantPermissions.size() == 0) {
-                    continue;
-                }
-
-                roleDetailDto.setRole(IRoleDtoMapper.INSTANCE.toRoleFullDto(grantPermissions.get(0).getRole()));
-                roleDetailDto.getRole().setGrantPermissions((new ArrayList<>()));
-                for (GrantPermission grantPermission : grantPermissions) {
-                    roleDetailDto.getRole().getGrantPermissions().add(IGrantPermissionDtoMapper.INSTANCE.toGrantPermissionDto(grantPermission));
-                }
-                employeeFullDto.getRoleDetails().add(roleDetailDto);
-            }
-        }
+        List<GrantPermission> grantPermissions = grantPermissionRepository.getRoleId(employeeFullDto.getRole().getId());
+        List<GrantPermissionDto> grantPermissionDtos = IGrantPermissionDtoMapper.INSTANCE.toGrantPermissionDtoList(grantPermissions);
+        employeeFullDto.getRole().setGrantPermissions(grantPermissionDtos);
         return employeeFullDto;
     }
 
@@ -263,7 +196,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public EmployeesDto changePassword(String userName, ChangePasswordDto changePasswordDto, String agencyId) {
         try {
             // get Employee by userName
-            Employees employees = employeesRepository.getEmployeeByEmail(userName, agencyId);
+            Employees employees = employeesRepository.getEmployeeByEmail(userName);
             employees.setPassword(BCryptHelper.encode(changePasswordDto.getNewPassword()));
 
             Employees updatedEmployee = employeesRepository.save(employees);
@@ -286,64 +219,13 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    @Transactional(rollbackOn = TransactionException.class)
-    public boolean upgradeAdminCompany(List<String> features, String companyId) {
-        RoleDetail roleDetail = roleDetailRepository.getGlobalAdminByCompany(companyId);
-        Role roleGlobalAdmin = roleDetail.getRole();
-        RoleDto roleGlobalAdminDto = IRoleDtoMapper.INSTANCE.toRoleDto(roleGlobalAdmin);
-
-        // get current permission list
-        List<GrantPermission> currentGrantPermissionList = grantPermissionRepository.getRoleId(roleGlobalAdmin.getId());
-        List<String> currentPermissionCodeList = currentGrantPermissionList.stream()
-                .map(s -> s.getPermission().getCode()).collect(Collectors.toList());
-
-        // get new permission list
-        List<Permission> newPermissionList = permissionRepository.getByFeatureKeyList(features);
-        List<String> newPermissionCodeList = newPermissionList.stream()
-                .map(Permission::getCode).collect(Collectors.toList());;
-
-        // get new and deleted permission code
-        List<String> insertPermissionCodeList = newPermissionCodeList.stream()
-                .filter(p -> !currentPermissionCodeList.contains(p)).collect(Collectors.toList());
-        List<String> deletePermissionCodeList = currentPermissionCodeList.stream()
-                .filter(p -> !newPermissionCodeList.contains(p)).collect(Collectors.toList());
-
-        // delete grant permission contain deleted code
-        List<Role> rolesGetByCompanyId = roleRepository.findAllByCompanyId(companyId);
-        List<String> roleIdsGetByCompanyId = rolesGetByCompanyId.stream().map(Role::getId).collect(Collectors.toList());
-        if (deletePermissionCodeList.size() > 0) {
-            grantPermissionRepository.deleteByPermissionListAndRoleList(deletePermissionCodeList, roleIdsGetByCompanyId);
-        }
-
-        List<GrantPermissionDto> insertGrantPermissionDtoList = new ArrayList<>();
-        for (String p : insertPermissionCodeList) {
-            GrantPermissionDto g = new GrantPermissionDto();
-            g.setId(UUIDHelper.generateType4UUID().toString());
-            g.setRole(roleGlobalAdminDto);
-            PermissionDto permissionDto = new PermissionDto();
-            permissionDto.setCode(p);
-            g.setPermission(permissionDto);
-            insertGrantPermissionDtoList.add(g);
-        }
-        List<GrantPermission> insertGrantPermissionList = grantPermissionRepository
-                .saveAll(IGrantPermissionDtoMapper.INSTANCE.toGrantPermissionList(insertGrantPermissionDtoList));
-
-        return true;
-    }
-
-    @Override
-    public Integer countEmployeeByCompany(String companyId) {
-        return employeesRepository.countEmployeeByCompanyId(companyId);
-    }
-
-    @Override
     public EmployeeFullDto getEmployeeFullByEmail(String email, String agencyId) {
         try {
-            Employees employee = employeesRepository.getEmployeeByEmail(email, agencyId);
+            Employees employee = employeesRepository.getEmployeeByEmail(email);
             List<RoleDetail> details = roleDetailRepository.getDetailsByEmployeeId(employee.getId());
             EmployeeFullDto employeeDto = IEmployeesDtoMapper.INSTANCE.toEmployeeFullDto(employee);
             List<RoleDetailFullDto> detailDto = IRoleDetailDtoMapper.INSTANCE.toRoleDetailFullListDto(details);
-            employeeDto.setRoleDetails(detailDto);
+            // employeeDto.setRoleDetails(detailDto);
             return employeeDto;
         } catch (Exception ex) {
             logger.error(ex.getMessage());

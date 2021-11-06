@@ -14,16 +14,6 @@ public class AuthenticationFacade implements IAuthenticationFacade {
     }
 
     @Override
-    public String getAgencyId() {
-        return this.getUserPrinciple().getAgencyId();
-    }
-
-    @Override
-    public String getCompanyId() {
-        return this.getUserPrinciple().getCompanyId();
-    }
-
-    @Override
     public boolean hasPermission(String permissionCode) {
         Optional<String> isHavingPermission = this.getUserPrinciple()
                 .getAuthorities()

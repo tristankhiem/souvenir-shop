@@ -7,10 +7,12 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "permissions")
-public class Permission {
+@Table(name = "supplier")
+public class Supplier {
     @Id
-    private String code;
+    private String id;
     @Column
     private String name;
+    @Column
+    private String address;
 }

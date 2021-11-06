@@ -35,20 +35,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${adi.cors.client.agency.base-url}")
     private String clientDomain;
 
-    @Value("${adi.cors.client.collaborators.base-url}")
-    private String clientCollaboratorsDomain;
-
-    @Value("${adi.services.warehouse.base-url}")
-    private String warehouseDomain;
-
-    @Value("${adi.cors.client.software.base-url}")
-    private String clientSoftDomain;
-
-    @Value("${adi.services.ezsoftware.base-url}")
-    private String softDomain;
-
-
-
     @Autowired
     private JwtAuthEntryPoint unauthorizedHandler;
 
@@ -121,7 +107,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(clientDomain, clientCollaboratorsDomain, warehouseDomain, clientSoftDomain, softDomain));
+        configuration.setAllowedOrigins(Arrays.asList(clientDomain));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

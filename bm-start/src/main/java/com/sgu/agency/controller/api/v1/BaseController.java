@@ -14,19 +14,9 @@ public class BaseController {
     protected EmployeesDto getCurrentEmployee() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserPrinciple userPrincipal = (UserPrinciple) auth.getPrincipal();
-        EmployeesDto employeesDto = employeeService.getEmployeeByEmail(userPrincipal.getUsername(), userPrincipal.getAgencyId());
+        EmployeesDto employeesDto = employeeService.getEmployeeByEmail(userPrincipal.getUsername());
 
         return employeesDto;
-    }
-
-    protected String getAgencyId() {
-        UserPrinciple userPrincipal = this.getUserPrinciple();
-        return userPrincipal.getAgencyId();
-    }
-
-    protected String getCompanyId() {
-        UserPrinciple userPrincipal = this.getUserPrinciple();
-        return userPrincipal.getCompanyId();
     }
 
     private UserPrinciple getUserPrinciple() {

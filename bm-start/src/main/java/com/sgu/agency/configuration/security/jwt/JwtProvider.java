@@ -34,8 +34,6 @@ public class JwtProvider {
                 .signWith(SignatureAlgorithm.HS512, this.getJwtSecretBase64())
                 .claim("password", userPrincipal.getPassword())
                 .claim("permissions", userPrincipal.getAuthorities())
-                .claim("agencyId", userPrincipal.getAgencyId())
-                .claim("companyId", userPrincipal.getCompanyId())
                 .compact();
     }
 

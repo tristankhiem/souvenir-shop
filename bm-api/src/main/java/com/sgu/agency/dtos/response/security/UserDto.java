@@ -16,8 +16,6 @@ public class UserDto {
     private String email;
     private String password;
     private List<String> permissions;
-    private String companyId;
-    private AgencyDto agency;
     private UserModelEnum userModel;
     public Boolean isLimited;
 }

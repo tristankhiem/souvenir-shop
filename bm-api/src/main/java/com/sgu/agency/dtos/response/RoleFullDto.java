@@ -10,7 +10,6 @@ import java.util.List;
 @Data
 public class RoleFullDto {
     private String id;
-    private AgencyDto agency;
     @NotNull (message = "Tên quyền không được để trống")
     @NotEmpty(message = "Tên quyền không được để trống")
     private String name;

@@ -12,20 +12,19 @@ import java.util.Date;
 public class Employees {
     @Id
     private String id;
-    @ManyToOne
-    @JoinColumn(name = "agency_id")
-    private Agency agency;
-    @Column(name="full_name")
-    private String fullName;
+    @Column
+    private String name;
+    @Column
+    private String phone;
     @Column
     private String email;
     @Column
     private String password;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "blocked_status")
-    private BlockStatusEnum blockedStatus;
     @Column(name="birth_date")
     private Date birthDate;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
     @Column(name = "created_date")
     private Date createdDate;
     @Column(name = "updated_date")

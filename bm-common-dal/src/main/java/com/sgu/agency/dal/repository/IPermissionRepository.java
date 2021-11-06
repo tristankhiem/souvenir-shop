@@ -12,6 +12,4 @@ import java.util.List;
 public interface IPermissionRepository extends JpaRepository<Permission, String> {
     @Query("select p from Permission p where p.code in :idList")
     List<Permission> getByCodeList(@Param("idList") List<String> idList);
-    @Query("select p from Permission p where p.featureKey in :keyList")
-    List<Permission> getByFeatureKeyList(@Param("keyList") List<String> keyList);
 }

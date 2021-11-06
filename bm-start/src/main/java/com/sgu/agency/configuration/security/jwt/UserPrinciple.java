@@ -23,24 +23,18 @@ public class UserPrinciple implements UserDetails {
     @JsonIgnore
     private String password;
 
-    private String agencyId;
-
-    private String companyId;
-
     private UserModelEnum userModel;
 
     private Boolean isLimited;
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrinciple(String username, String email, String password, AgencyDto agency, String companyId, UserModelEnum userModel, Boolean isLimited,
+    public UserPrinciple(String username, String email, String password, UserModelEnum userModel, Boolean isLimited,
                          Collection<? extends GrantedAuthority> authorities) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
-        this.agencyId = agency == null ? "" : agency.getId();
-        this.companyId = companyId;
         this.userModel = userModel;
         this.isLimited = isLimited;
     }
@@ -59,8 +53,6 @@ public class UserPrinciple implements UserDetails {
                 user.getEmail(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getAgency(),
-                user.getCompanyId(),
                 user.getUserModel(),
                 user.getIsLimited(),
                 authorities
@@ -75,14 +67,6 @@ public class UserPrinciple implements UserDetails {
     @Override
     public String getPassword() {
         return password;
-    }
-
-    public String getAgencyId() {
-        return agencyId;
-    }
-
-    public String getCompanyId() {
-        return companyId;
     }
 
     @Override
