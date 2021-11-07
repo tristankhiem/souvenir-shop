@@ -18,7 +18,7 @@ public interface IEmployeesRepository extends JpaRepository<Employees, String> {
     Employees getEmployeeByEmail(String email);
 
     @Query("SELECT e FROM Employees e WHERE e.email = ?1")
-    Employees getEmployeeByEmailCompany(String email, String companyId);
+    Employees getEmployeeByEmailCompany(String email);
 
     @Query("select t from Employees t where t.name like %?1% ")
     List<Employees> getLikeName(String employeeName, String agencyId);

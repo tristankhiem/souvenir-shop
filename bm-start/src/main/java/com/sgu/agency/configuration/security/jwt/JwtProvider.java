@@ -1,6 +1,5 @@
 package com.sgu.agency.configuration.security.jwt;
 
-import com.sgu.agency.dtos.response.AgencyDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
@@ -74,15 +73,6 @@ public class JwtProvider {
         }
 
         return permissions;
-    }
-
-    public AgencyDto getAgencyFromJwtToken(String token) {
-        AgencyDto agency = new AgencyDto();
-        agency.setId((String) Jwts.parser()
-                .setSigningKey(this.getJwtSecretBase64())
-                .parseClaimsJws(token)
-                .getBody().setSubject("agencyId").get("agencyId"));
-        return agency;
     }
 
     public String getCompanyIdFromJwtToken(String token) {

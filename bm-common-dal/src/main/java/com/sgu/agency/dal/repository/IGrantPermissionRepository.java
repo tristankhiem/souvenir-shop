@@ -13,9 +13,6 @@ public interface IGrantPermissionRepository extends JpaRepository<GrantPermissio
     @Query("select u from GrantPermission u where u.role.id = ?1")
     List<GrantPermission> getRoleId(String roleId);
 
-    @Query("SELECT g FROM GrantPermission g WHERE g.role.id = (SELECT r.id FROM Role r WHERE r.id = (SELECT rd.id FROM RoleDetail rd WHERE rd.employee.id = ?1))")
-    List<GrantPermission> getByEmployeeId(String employeeId);
-
     @Modifying
     @Query("delete from GrantPermission g where (g.role.id in :roleIdList) and (g.permission.code in :permissionCodeList)")
     void deleteByPermissionListAndRoleList(@Param("permissionCodeList") List<String> permissionCodeList, @Param("roleIdList") List<String> roleIdList);

@@ -33,22 +33,18 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Autowired
     private IEmployeesRepository employeesRepository;
     @Autowired
-    private IRoleDetailRepository roleDetailRepository;
-    @Autowired
     private IGrantPermissionRepository grantPermissionRepository;
     @Autowired
     private IRoleRepository roleRepository;
     @Autowired
     private IPermissionRepository permissionRepository;
     @Autowired
-    private IAgencyRepository agencyRepository;
-    @Autowired
     private IEmployeeDao employeeDao;
 
     @Override
     @Transactional
-    public List<EmployeesDto> findAll(String agencyId) {
-        List<Employees> employees = employeesRepository.findAllByAgencyId(agencyId);
+    public List<EmployeesDto> findAll() {
+        List<Employees> employees = employeesRepository.findAll();
         return IEmployeesDtoMapper.INSTANCE.toEmployeesDtoList(employees);
     }
 
@@ -59,8 +55,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public EmployeesDto getEmployeeByEmailCompany(String email, String companyId) {
-        Employees employee = employeesRepository.getEmployeeByEmailCompany(email, companyId);
+    public EmployeesDto getEmployeeByEmailCompany(String email) {
+        Employees employee = employeesRepository.getEmployeeByEmailCompany(email);
         return IEmployeesDtoMapper.INSTANCE.toEmployeesDto(employee);
     }
 
@@ -78,15 +74,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Override
     @Transactional
-    public EmployeeFullDto insert(EmployeeFullDto employeeFullDto) {
+    public EmployeesDto insert(EmployeesDto employeesDto) {
         try {
-            Employees employees = IEmployeesDtoMapper.INSTANCE.toEmployees(employeeFullDto);
+            Employees employees = IEmployeesDtoMapper.INSTANCE.toEmployees(employeesDto);
 
             employees.setId(UUIDHelper.generateType4UUID().toString());
             Employees createdEmployee = employeesRepository.save(employees);
 
-            employeeFullDto.setId(createdEmployee.getId());
-            return employeeFullDto;
+            employeesDto.setId(createdEmployee.getId());
+            return employeesDto;
         } catch (Exception ex) {
             logger.error(ex.getMessage());
             logger.error(ex.getStackTrace().toString());
@@ -96,17 +92,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Override
     @Transactional
-    public EmployeeFullDto update(EmployeeFullDto employeeFullDto) {
+    public EmployeesDto update(EmployeesDto employeesDto) {
         try {
-            Employees old = employeesRepository.findById(employeeFullDto.getId()).get();
-            Employees employees = IEmployeesDtoMapper.INSTANCE.toEmployees(employeeFullDto);
+            Employees old = employeesRepository.findById(employeesDto.getId()).get();
+            Employees employees = IEmployeesDtoMapper.INSTANCE.toEmployees(employeesDto);
             employees.setPassword(old.getPassword());
             employeesRepository.save(employees);
-            // collect role detail was removed.
-            List<RoleDetail> roleDetails = roleDetailRepository.getDetailsByEmployeeId(employeeFullDto.getId());
-            List<String> detailDelete = new ArrayList<>();
 
-            return employeeFullDto;
+            return employeesDto;
         } catch (Exception ex) {
             logger.error(ex.getMessage());
             logger.error(ex.getStackTrace().toString());
@@ -118,7 +111,6 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Transactional
     public boolean deleteEmployee(String id) {
         try {
-            EmployeeFullDto employeeFull = this.getEmployeeFullById(id);
             employeesRepository.deleteById(id);
             return true;
         }  catch (Exception ex) {
@@ -129,9 +121,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public BaseSearchDto<List<EmployeesDto>> findAll(BaseSearchDto<List<EmployeesDto>> searchDto, String agencyId) {
+    public BaseSearchDto<List<EmployeesDto>> findAll(BaseSearchDto<List<EmployeesDto>> searchDto) {
         if(searchDto == null || searchDto.getCurrentPage() == -1 || searchDto.getRecordOfPage() == 0) {
-            searchDto.setResult(this.findAll(agencyId));
+            searchDto.setResult(this.findAll());
             return searchDto;
         }
 
@@ -142,7 +134,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         PageRequest request = sort == null ? PageRequest.of(searchDto.getCurrentPage(), searchDto.getRecordOfPage())
                 : PageRequest.of(searchDto.getCurrentPage(), searchDto.getRecordOfPage(), sort);
 
-        Page<Employees> page = employeesRepository.findAllByAgencyId(request, agencyId);
+        Page<Employees> page = employeesRepository.findAll(request);
         searchDto.setTotalRecords(page.getTotalElements());
         searchDto.setResult(IEmployeesDtoMapper.INSTANCE.toEmployeesDtoList(page.getContent()));
 
@@ -166,10 +158,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public EmployeeFullDto getEmployeeFullById(String id) {
         try {
             Employees employee = employeesRepository.findById(id).get();
-            List<RoleDetail> details = roleDetailRepository.getDetailsByEmployeeId(employee.getId());
             EmployeeFullDto employeeDto = IEmployeesDtoMapper.INSTANCE.toEmployeeFullDto(employee);
-            List<RoleDetailFullDto> detailDto = IRoleDetailDtoMapper.INSTANCE.toRoleDetailFullListDto(details);
-            // employeeDto.setRoleDetails(detailDto);
             return employeeDto;
         } catch (Exception ex) {
             logger.error(ex.getMessage());
@@ -222,10 +211,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public EmployeeFullDto getEmployeeFullByEmail(String email, String agencyId) {
         try {
             Employees employee = employeesRepository.getEmployeeByEmail(email);
-            List<RoleDetail> details = roleDetailRepository.getDetailsByEmployeeId(employee.getId());
             EmployeeFullDto employeeDto = IEmployeesDtoMapper.INSTANCE.toEmployeeFullDto(employee);
-            List<RoleDetailFullDto> detailDto = IRoleDetailDtoMapper.INSTANCE.toRoleDetailFullListDto(details);
-            // employeeDto.setRoleDetails(detailDto);
             return employeeDto;
         } catch (Exception ex) {
             logger.error(ex.getMessage());

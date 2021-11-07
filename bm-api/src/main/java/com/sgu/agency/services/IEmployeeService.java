@@ -7,15 +7,15 @@ import com.sgu.agency.dtos.response.*;
 import java.util.List;
 
 public interface IEmployeeService {
-    BaseSearchDto<List<EmployeesDto>> findAll(BaseSearchDto<List<EmployeesDto>> searchDto, String agencyId);
-    List<EmployeesDto> findAll(String agencyId);
+    BaseSearchDto<List<EmployeesDto>> findAll(BaseSearchDto<List<EmployeesDto>> searchDto);
+    List<EmployeesDto> findAll();
     EmployeesDto getEmployeeById(String id);
     EmployeesDto getEmployeeByEmail(String email);
-    EmployeesDto getEmployeeByEmailCompany(String email, String companyId);
+    EmployeesDto getEmployeeByEmailCompany(String email);
     List<EmployeesDto> getLikeName(String employeeName, String agencyId);
     List<EmployeesDto> getEmployees(List<String> ids);
-    EmployeeFullDto insert(EmployeeFullDto employeeFullDto);
-    EmployeeFullDto update(EmployeeFullDto employeeFullDto);
+    EmployeesDto insert(EmployeesDto employeesDto);
+    EmployeesDto update(EmployeesDto employeesDto);
     boolean deleteEmployee(String id);
     EmployeeFullDto getEmployeeFullById(String id);
     EmployeeFullDto getEmployeeFull(String email);

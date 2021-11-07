@@ -8,9 +8,4 @@ import java.util.Date;
 public class PermissionDto {
     private String code;
     private String name;
-    private String description;
-    private String featureKey;
-    private boolean globalAdminOnly;
-    private Date createdDate;
-    private Date updatedDate;
 }

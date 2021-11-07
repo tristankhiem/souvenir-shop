@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface IRoleRepository extends JpaRepository<Role, String> {
     @Query("select r from Role r where r.name = ?1")
-    Role getByName(String name, String agencyId);
+    Role getByName(String name);
 
     @Query("select r from Role r")
     List<Role> findAllByAgencyId(String agencyId);
@@ -34,13 +34,8 @@ public interface IRoleRepository extends JpaRepository<Role, String> {
 
     @Query("select t from Role t where t.name = ?2")
     Role getRoleByNameAndCompany(String companyId, String name);
-    
-    @Query("SELECT t FROM Role t WHERE t.id IN (SELECT u.role.id FROM RoleDetail u WHERE u.employee.id = ?1)")
-    List<Role> getByEmployeeId(String employeeId);
 
-    @Query("SELECT t.id FROM Role t WHERE t.id IN (SELECT u.role.id FROM RoleDetail u WHERE u.employee.id = ?1)")
-    List<String> getRolesIdByEmployeeId(String employeeId);
+    @Query("SELECT r FROM Role r where r.name LIKE %?1%")
+    List<Role> getLikeName(String name);
 
-    @Query("SELECT t FROM Role t WHERE t.name = ?1 AND t.id IN (SELECT u.role.id FROM RoleDetail u WHERE u.employee.id = ?2)")
-    Role getByNameAndEmployeeId(String roleName, String employeeId);
 }

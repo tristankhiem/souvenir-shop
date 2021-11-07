@@ -10,14 +10,17 @@ import java.util.Date;
 @Data
 public class EmployeesDto {
     private String id;
-    private AgencyDto agency;
     @NotEmpty(message = "Tên nhân viên không được trống")
-    private String fullName;
+    private String name;
+    @NotEmpty(message = "Số điện thoại không được trống")
+    private String phone;
     @NotEmpty(message = "Email nhân viên không được trống")
     @Email(message = "Email không hợp lệ")
     private String email;
     @NotEmpty(message = "Mật khẩu không được trống")
     private String password;
-    private BlockStatusEnum blockedStatus;
     private Date birthDate;
+    private RoleDto role;
+    private Date createdDate;
+    private Date updatedDate;
 }

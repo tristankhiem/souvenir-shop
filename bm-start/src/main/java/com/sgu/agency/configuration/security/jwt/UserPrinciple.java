@@ -1,7 +1,6 @@
 package com.sgu.agency.configuration.security.jwt;
 
 import com.sgu.agency.common.enums.UserModelEnum;
-import com.sgu.agency.dtos.response.AgencyDto;
 import com.sgu.agency.dtos.response.security.UserDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;

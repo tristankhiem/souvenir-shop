@@ -1,7 +1,6 @@
 package com.sgu.agency.configuration.security.jwt;
 
 import com.sgu.agency.configuration.WebSecurityConfig;
-import com.sgu.agency.dtos.response.AgencyDto;
 import com.sgu.agency.dtos.response.security.UserDto;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
@@ -71,12 +70,6 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
         }
 
         return null;
-    }
-
-    private AgencyDto getAgency(HttpServletRequest request) {
-        AgencyDto agency = new AgencyDto();
-        agency.setId(request.getHeader("X-Agency"));
-        return agency;
     }
 
     private String getCompanyId(HttpServletRequest request) {
