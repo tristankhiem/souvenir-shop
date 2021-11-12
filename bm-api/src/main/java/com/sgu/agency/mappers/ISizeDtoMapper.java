@@ -14,6 +14,6 @@ public interface ISizeDtoMapper {
     SizeDto toSizeDto(Size employee);
     Size toSize(SizeDto categoryDto);
 
-    List<SizeDto> toSizeDtos(List<Size> categories);
+    List<SizeDto> toSizeDtoList(List<Size> categories);
 
 }

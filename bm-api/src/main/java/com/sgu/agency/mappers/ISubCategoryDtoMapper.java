@@ -14,6 +14,6 @@ public interface ISubCategoryDtoMapper {
     SubCategoryDto toSubCategoryDto(SubCategory employee);
     SubCategory toSubCategory(SubCategoryDto categoryDto);
 
-    List<SubCategoryDto> toSubCategoryDtos(List<SubCategory> categories);
+    List<SubCategoryDto> toSubCategoryDtoList(List<SubCategory> categories);
 
 }

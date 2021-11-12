@@ -14,6 +14,6 @@ public interface IColorDtoMapper {
     ColorDto toColorDto(Color employee);
     Color toColor(ColorDto categoryDto);
     
-    List<ColorDto> toColorDtos(List<Color> categories);
+    List<ColorDto> toColorDtoList(List<Color> categories);
 
 }
