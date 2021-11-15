@@ -88,10 +88,9 @@ public class ProductController {
         return res;
     }
 
-    @PostMapping()
-    public ResponseEntity<?> uploadImage(@RequestPart("imageFile") MultipartFile file,
-                                         @RequestParam("productId") String productId) {
-        productService.uploadImageByProductId(file, productId);
+    @PostMapping("/upload-image/{productId}")
+    public ResponseEntity<?> uploadImage(@ModelAttribute("files") MultipartFile[] files, @PathVariable String productId) {
+        productService.uploadImageByProductId(files[0], productId);
         return ResponseEntity.ok(productService.getEncodedBase64ImageByProductId(productId));
     }
 
