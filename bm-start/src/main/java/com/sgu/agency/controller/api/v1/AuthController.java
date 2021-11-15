@@ -5,10 +5,12 @@ import com.sgu.agency.common.utils.BCryptHelper;
 import com.sgu.agency.configuration.security.jwt.JwtProvider;
 import com.sgu.agency.configuration.security.jwt.UserPrinciple;
 import com.sgu.agency.dtos.request.LoginDto;
+import com.sgu.agency.dtos.response.CustomerDto;
 import com.sgu.agency.dtos.response.EmployeeFullDto;
 import com.sgu.agency.dtos.response.JwtResponseDto;
 import com.sgu.agency.dtos.response.ResponseDto;
 import com.sgu.agency.dtos.response.security.UserDto;
+import com.sgu.agency.services.ICustomerService;
 import com.sgu.agency.services.IEmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,8 @@ public class AuthController {
     JwtProvider jwtProvider;
     @Autowired
     private IEmployeeService employeeService;
+    @Autowired
+    private ICustomerService customerService;
 
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -53,6 +57,33 @@ public class AuthController {
         UserDto userDto = employeesDto.toUserDto();
 
         userDto.setUserModel(UserModelEnum.EMPLOYEE);
+
+        UserPrinciple userDetail = UserPrinciple.build(userDto);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                userDetail, null, userDetail.getAuthorities());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtProvider.generateJwtToken(SecurityContextHolder.getContext().getAuthentication());
+
+        // Reset password
+        userDto.setPassword("");
+
+        return ResponseEntity.ok(new ResponseDto(Arrays.asList("Đăng nhập thành công"), HttpStatus.OK.value(), new JwtResponseDto(jwt, userDto)));
+    }
+
+    @PostMapping("/login-customer")
+    public ResponseEntity<?> loginCustomer(HttpServletRequest request, @Valid @RequestBody LoginDto user) throws IOException, JAXBException {
+        logger.info("login api");
+
+        // Validate employee account
+        CustomerDto customerDto = customerService.getCustomerByEmailCompany(user.getUsername());
+        if(customerDto == null || !BCryptHelper.check(user.getPassword(), customerDto.getPassword()) || customerDto.getIsValid()==false) {
+            return ResponseEntity.ok(new ResponseDto(Arrays.asList("Tên đăng nhập hoặc password không đúng"), HttpStatus.BAD_GATEWAY.value(), ""));
+        }
+
+        UserDto userDto = customerDto.toUserDto();
+
+        userDto.setUserModel(UserModelEnum.CUSTOMER);
 
         UserPrinciple userDetail = UserPrinciple.build(userDto);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

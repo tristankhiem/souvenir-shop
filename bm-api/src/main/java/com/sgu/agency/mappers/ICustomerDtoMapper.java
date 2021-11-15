@@ -11,9 +11,12 @@ import java.util.List;
 public interface ICustomerDtoMapper {
     ICustomerDtoMapper INSTANCE = Mappers.getMapper( ICustomerDtoMapper.class );
 
-    CustomerDto toCustomerDto(Customer employee);
-    Customer toCustomer(CustomerDto categoryDto);
+    CustomerDto toCustomerDto(Customer customer);
+    Customer toCustomer(CustomerDto customerDto);
+    List<CustomerDto>toCustomersDtoList(List<Customer> customersList);
 
-    List<CustomerDto> toCustomerDtos(List<Customer> categories);
+
+    //Customer toCustomer(CustomerDto categoryDto);
+
 
 }
