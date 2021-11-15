@@ -16,6 +16,6 @@ public interface ICategoryDtoMapper {
     CategoryDto toCategoryDto(Category employee);
     Category toCategory(CategoryDto categoryDto);
 
-    List<CategoryDto> toCategoryDtos(List<Category> categories);
+    List<CategoryDto> toCategoryDtoList(List<Category> categories);
 
 }

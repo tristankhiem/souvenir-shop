@@ -11,9 +11,9 @@ import java.util.List;
 public interface ISupplierDtoMapper {
     ISupplierDtoMapper INSTANCE = Mappers.getMapper( ISupplierDtoMapper.class );
 
-    SupplierDto toSupplierDto(Supplier employee);
-    Supplier toSupplier(SupplierDto categoryDto);
+    SupplierDto toSupplierDto(Supplier supplier);
+    Supplier toSupplier(SupplierDto supplierDto);
 
-    List<SupplierDto> toSupplierDtos(List<Supplier> categories);
+    List<SupplierDto> toSupplierDtoList(List<Supplier> suppliers);
 
 }
