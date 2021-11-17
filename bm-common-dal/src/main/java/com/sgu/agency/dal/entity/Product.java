@@ -18,6 +18,8 @@ public class Product {
     private String description;
     @Column(name = "image_url")
     private String imageUrl;
+    @Column(name = "image_byte", length = 1000)
+    private byte[] imageByte;
     @Column(name = "selling_price")
     private Double sellingPrice;
     @ManyToOne

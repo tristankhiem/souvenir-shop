@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +32,12 @@ public class ProductController {
     private static final Logger logger = LoggerFactory.getLogger(RoleController.class);
 
     public ProductController() {
+    }
+
+    @GetMapping("/findAll")
+    public ResponseEntity<?> findAll() {
+        List<ProductDto> search = productService.findAll();
+        return ResponseEntity.ok(new ResponseDto(Arrays.asList("Tải sản phẩm thành công!"), HttpStatus.OK.value(), search));
     }
 
     @PostMapping("/findAll")
@@ -75,8 +82,8 @@ public class ProductController {
         return res;
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> delete(@RequestParam String id) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable String id) {
         List<String> errMessages = validateDelete(id);
         if(errMessages.size() > 0) {
             return ResponseEntity.ok(new ResponseDto(errMessages, HttpStatus.BAD_REQUEST.value(), ""));
@@ -89,9 +96,15 @@ public class ProductController {
     }
 
     @PostMapping("/upload-image/{productId}")
-    public ResponseEntity<?> uploadImage(@ModelAttribute("files") MultipartFile[] files, @PathVariable String productId) {
+    public ResponseEntity<?> uploadImage(@ModelAttribute("files") MultipartFile[] files, @PathVariable String productId) throws IOException {
         productService.uploadImageByProductId(files[0], productId);
-        return ResponseEntity.ok(productService.getEncodedBase64ImageByProductId(productId));
+        return ResponseEntity.ok(new ResponseDto(Arrays.asList("Xóa sản phẩm thành công"), HttpStatus.OK.value(), null));
+    }
+
+    @PostMapping("/delete-image/{productId}")
+    public ResponseEntity<?> uploadImage(@PathVariable String productId) throws IOException {
+        productService.deleteImageByProductId(productId);
+        return ResponseEntity.ok(new ResponseDto(Arrays.asList("Xóa ảnh thành công"), HttpStatus.OK.value(), null));
     }
 
     private List<String> validateInsert(ProductDto productDto) {

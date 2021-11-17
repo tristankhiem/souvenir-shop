@@ -13,6 +13,7 @@ public class ProductDto {
     private Integer quantity;
     private String description;
     private String imageUrl;
+    private byte[] imageByte;
     private Double sellingPrice;
     private SubCategoryDto subCategory;
 }

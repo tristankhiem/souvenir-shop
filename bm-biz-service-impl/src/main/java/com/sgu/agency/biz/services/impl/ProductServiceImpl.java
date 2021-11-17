@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -39,10 +41,13 @@ public class ProductServiceImpl implements IProductService {
     @Transactional
     public List<ProductDto> findAll() {
         List<Product> products = productRepository.findAll();
-        for (Product product : products) {
-            product.setImageUrl(this.getEncodedBase64ImageByProductId(product.getId()));
+        List<ProductDto> productDtos = IProductDtoMapper.INSTANCE.toProductDtoList(products);
+        for (ProductDto product : productDtos) {
+            if (product.getImageByte() != null) {
+                product.setImageByte(FileReaderUtil.decompressBytes(product.getImageByte()));
+            }
         }
-        return IProductDtoMapper.INSTANCE.toProductDtoList(products);
+        return productDtos;
     }
 
     @Override
@@ -91,7 +96,11 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public ProductDto getById(String id) {
         Product product = productRepository.findById(id).get();
-        return IProductDtoMapper.INSTANCE.toProductDto(product);
+        ProductDto productDto = IProductDtoMapper.INSTANCE.toProductDto(product);
+        if (product.getImageByte() != null) {
+            productDto.setImageByte(FileReaderUtil.decompressBytes(product.getImageByte()));
+        }
+        return productDto;
     }
 
     @Override
@@ -131,38 +140,17 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public String getEncodedBase64ImageByProductId(String id) {
-        return productRepository.findById(id).map((product) -> {
-            //Get image name absolute path from Employee instance
-            String imageName = product.getImageUrl()    ;
-
-            //Check if TEMP_IMAGES_STORAGE contains the temp image name, if it exists the immediately return
-            // the image encoded in base64.
-            if (TemporaryLocalStorage.TEMP_IMAGES_STORAGE.containsKey(imageName)) {
-                return TemporaryLocalStorage.TEMP_IMAGES_STORAGE.get(imageName);
-            }
-
-            //Read file content from disk with asssociated image file name
-            byte[] fileContent = fileReaderUtil.readFileFromDisk(imageName);
-
-            //Convert image file content to base64 type.
-            String encodedString = fileReaderUtil.getConvertedBase64ImageContentFromImageByteContent(fileContent);
-
-            //Map the encoding to the associated image name.
-            return TemporaryLocalStorage.mapAndGetEncodedStringToAssociatedImageName(imageName, encodedString);
-
-        }) //If employee is not found based on the given employee id then throw the exception.
-                .orElseThrow(NoSuchElementException::new);
+    public void uploadImageByProductId(MultipartFile file, String id) throws IOException {
+        Product product = productRepository.findById(id).get();
+        product.setImageByte(FileReaderUtil.compressBytes(file.getBytes()));
+        productRepository.save(product);
     }
 
     @Override
-    public void uploadImageByProductId(MultipartFile file, String id) {
-        productRepository.findById(id).map((product) -> {
-            String imageAbsoluteName = fileUploadUtil
-                    .getPreparedImageFileNameWithAssociatedEmployeeId(String.valueOf(id));
-            product.setImageUrl(imageAbsoluteName);
-            fileUploadUtil.writePNGImageFileToDisk(imageAbsoluteName, file);
-            return productRepository.save(product);
-        }).orElseThrow(NoSuchElementException::new);
+    public void deleteImageByProductId(String id) {
+        Product product = productRepository.findById(id).get();
+        product.setImageByte(null);
+        product.setImageUrl(null);
+        productRepository.save(product);
     }
 }
