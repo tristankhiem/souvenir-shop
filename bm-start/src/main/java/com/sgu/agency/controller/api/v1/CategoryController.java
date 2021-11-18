@@ -2,8 +2,10 @@ package com.sgu.agency.controller.api.v1;
 
 import com.sgu.agency.configuration.security.jwt.JwtProvider;
 import com.sgu.agency.dtos.request.BaseSearchDto;
+import com.sgu.agency.dtos.response.CategoryFullDto;
 import com.sgu.agency.dtos.response.ResponseDto;
 import com.sgu.agency.dtos.response.CategoryDto;
+import com.sgu.agency.dtos.response.SubCategoryDto;
 import com.sgu.agency.services.ICategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +28,15 @@ public class CategoryController {
     @Autowired
     private ICategoryService categoryService;
 
-
     private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
     public CategoryController() {
     }
-
+    @GetMapping()
+    public ResponseEntity<?> getAll() {
+        List<CategoryFullDto> result =  categoryService.findAllCategoryFull();
+        return ResponseEntity.ok(new ResponseDto(Arrays.asList("Lấy dữ liệu thành công"), HttpStatus.OK.value(), result));
+    }
     @PostMapping("/search")
     public ResponseEntity<?> search(@Valid @RequestBody BaseSearchDto<List<CategoryDto>> search) {
         BaseSearchDto<List<CategoryDto>> result = categoryService.findAll(search);
@@ -49,6 +54,20 @@ public class CategoryController {
         CategoryDto categorysDto = categoryService.getCategoryById(id);
         return ResponseEntity.ok(new ResponseDto(Arrays.asList("Lấy dữ liệu thành công"), HttpStatus.OK.value(), categorysDto));
     }
+
+//    @GetMapping("/get-subcategories/{id}")
+//    public ResponseEntity<?> getSubcategories(@PathVariable String id) {
+//       SubCategoryDto subcategorysDto = categoryService.getSubcategoryById(id);
+//       System.out.println("/get-subcategories/{id} "+subcategorysDto.getId());
+//       return ResponseEntity.ok(new ResponseDto(Arrays.asList("Lấy dữ liệu thành công"), HttpStatus.OK.value(), subcategorysDto));
+//    }
+//
+//    @GetMapping("/get-subcategories-by-category/{id}")
+//    public ResponseEntity<?> getSubcategoriesByCategory(@PathVariable String id) {
+//        List<SubCategoryDto> subcategorysDto = categoryService.getSubcategoriesByCategory(id);
+//        System.out.println("/get-subcategories-by-category/{id} "+subcategorysDto.size());
+//        return ResponseEntity.ok(new ResponseDto(Arrays.asList("Lấy dữ liệu thành công"), HttpStatus.OK.value(), subcategorysDto));
+//    }
 
     @PostMapping("/insert")
     public ResponseEntity<?> insert(@Valid @RequestBody CategoryDto categoryDto) {
