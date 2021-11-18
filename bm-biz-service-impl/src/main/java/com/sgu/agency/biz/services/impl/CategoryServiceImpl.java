@@ -2,10 +2,16 @@ package com.sgu.agency.biz.services.impl;
 
 import com.sgu.agency.common.utils.UUIDHelper;
 import com.sgu.agency.dal.entity.Category;
+import com.sgu.agency.dal.entity.SubCategory;
 import com.sgu.agency.dal.repository.ICategoryRepository;
+import com.sgu.agency.dal.repository.ISubCategoryRepository;
 import com.sgu.agency.dtos.request.BaseSearchDto;
 import com.sgu.agency.dtos.response.CategoryDto;
+import com.sgu.agency.dtos.response.CategoryFullDto;
+import com.sgu.agency.dtos.response.SubCategoryDto;
 import com.sgu.agency.mappers.ICategoryDtoMapper;
+import com.sgu.agency.mappers.ICategoryFullDtoMapper;
+import com.sgu.agency.mappers.ISubCategoryDtoMapper;
 import com.sgu.agency.services.ICategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +30,30 @@ public class CategoryServiceImpl implements ICategoryService {
 
     @Autowired
     private ICategoryRepository categoryRepository;
+    @Autowired
+    private ISubCategoryRepository subCategoryRepository;
 
     @Override
     @Transactional
     public List<CategoryDto> findAll() {
         List<Category> category = categoryRepository.findAll();
         return ICategoryDtoMapper.INSTANCE.toCategoryDtoList(category);
+    }
+
+    @Override
+    public List<CategoryFullDto> findAllCategoryFull() {
+        List<Category> categories= categoryRepository.findAll();
+        List<CategoryFullDto> categoryFullDtoList=ICategoryFullDtoMapper.INSTANCE.toCategoryFullDtoList(categories);
+        for (CategoryFullDto s: categoryFullDtoList)
+        {
+            List<SubCategory> subCategory = subCategoryRepository.findByIdCategory(s.getId());
+            List<SubCategoryDto> subCategoryDtos = ISubCategoryDtoMapper.INSTANCE.toSubCategoryDtoList(subCategory);
+
+            s.setSubCategories(subCategoryDtos);
+        }
+
+        return categoryFullDtoList;
+
     }
 
     @Override
