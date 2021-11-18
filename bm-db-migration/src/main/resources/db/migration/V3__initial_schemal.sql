@@ -3,3 +3,6 @@ ALTER TABLE `product`
 
 ALTER TABLE `product_detail`
     ADD COLUMN `image_byte` BLOB NULL AFTER `product_id`;
+
+ALTER TABLE `product_detail`
+DROP COLUMN `sub_category_id`;

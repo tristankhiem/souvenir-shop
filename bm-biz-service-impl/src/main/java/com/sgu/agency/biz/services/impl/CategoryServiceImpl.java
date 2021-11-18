@@ -41,6 +41,12 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     @Override
+    public List<SubCategoryDto> getSubcategoriesByCategory(String categoryId) {
+        List<SubCategory> subCategories = subCategoryRepository.findByIdCategory(categoryId);
+        return ISubCategoryDtoMapper.INSTANCE.toSubCategoryDtoList(subCategories);
+    }
+
+    @Override
     public List<CategoryFullDto> findAllCategoryFull() {
         List<Category> categories= categoryRepository.findAll();
         List<CategoryFullDto> categoryFullDtoList=ICategoryFullDtoMapper.INSTANCE.toCategoryFullDtoList(categories);

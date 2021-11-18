@@ -17,6 +17,5 @@ public interface IProductDtoMapper {
     Product toProduct(ProductDto categoryDto);
 
     List<ProductDto> toProductDtoList(List<Product> productList);
-    List<ProductDto> toProductDtos(List<Product> categories);
 
 }

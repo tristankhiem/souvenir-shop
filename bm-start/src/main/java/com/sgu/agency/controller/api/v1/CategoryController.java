@@ -62,12 +62,11 @@ public class CategoryController {
 //       return ResponseEntity.ok(new ResponseDto(Arrays.asList("Lấy dữ liệu thành công"), HttpStatus.OK.value(), subcategorysDto));
 //    }
 //
-//    @GetMapping("/get-subcategories-by-category/{id}")
-//    public ResponseEntity<?> getSubcategoriesByCategory(@PathVariable String id) {
-//        List<SubCategoryDto> subcategorysDto = categoryService.getSubcategoriesByCategory(id);
-//        System.out.println("/get-subcategories-by-category/{id} "+subcategorysDto.size());
-//        return ResponseEntity.ok(new ResponseDto(Arrays.asList("Lấy dữ liệu thành công"), HttpStatus.OK.value(), subcategorysDto));
-//    }
+    @GetMapping("/get-subcategories-by-category/{id}")
+    public ResponseEntity<?> getSubcategoriesByCategory(@PathVariable String id) {
+        List<SubCategoryDto> subcategorysDto = categoryService.getSubcategoriesByCategory(id);
+        return ResponseEntity.ok(new ResponseDto(Arrays.asList("Lấy dữ liệu thành công"), HttpStatus.OK.value(), subcategorysDto));
+    }
 
     @PostMapping("/insert")
     public ResponseEntity<?> insert(@Valid @RequestBody CategoryDto categoryDto) {

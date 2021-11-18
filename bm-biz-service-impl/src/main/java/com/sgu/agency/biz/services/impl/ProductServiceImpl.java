@@ -32,12 +32,6 @@ public class ProductServiceImpl implements IProductService {
     @Autowired
     private IProductRepository productRepository;
 
-    @Autowired
-    private FileReaderUtil fileReaderUtil;
-
-    @Autowired
-    private FileUploadUtil fileUploadUtil;
-
     @Transactional
     public List<ProductDto> findAll() {
         List<Product> products = productRepository.findAll();
@@ -57,6 +51,18 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
+    public List<ProductDto> getListByCategory(String categoryId) {
+        List<Product> products = productRepository.getByCategory(categoryId);
+        List<ProductDto> productDtos = IProductDtoMapper.INSTANCE.toProductDtoList(products);
+        for (ProductDto product : productDtos) {
+            if (product.getImageByte() != null) {
+                product.setImageByte(FileReaderUtil.decompressBytes(product.getImageByte()));
+            }
+        }
+        return productDtos;
+    }
+
+    @Override
     public BaseSearchDto<List<ProductDto>> findAll(BaseSearchDto<List<ProductDto>> searchDto) {
         if (searchDto == null || searchDto.getCurrentPage() == -1 || searchDto.getRecordOfPage() == 0) {
             searchDto.setResult(this.findAll());
@@ -73,6 +79,12 @@ public class ProductServiceImpl implements IProductService {
         Page<Product> page = productRepository.findAll(request);
         searchDto.setTotalRecords(page.getTotalElements());
         searchDto.setResult(IProductDtoMapper.INSTANCE.toProductDtoList(page.getContent()));
+
+        for (ProductDto product : searchDto.getResult()) {
+            if (product.getImageByte() != null) {
+                product.setImageByte(FileReaderUtil.decompressBytes(product.getImageByte()));
+            }
+        }
 
         return searchDto;
     }

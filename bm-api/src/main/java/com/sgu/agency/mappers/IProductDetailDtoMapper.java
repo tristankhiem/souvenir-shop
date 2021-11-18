@@ -12,7 +12,7 @@ public interface IProductDetailDtoMapper {
     IProductDetailDtoMapper INSTANCE = Mappers.getMapper( IProductDetailDtoMapper.class );
 
     ProductDetailDto toProductDetailDto(ProductDetail employee);
-    ProductDetail toProduct(ProductDetailDto categoryDto);
+    ProductDetail toProductDetail(ProductDetailDto categoryDto);
 
     List<ProductDetailDto> toProductDetailDtos(List<ProductDetail> categories);
 

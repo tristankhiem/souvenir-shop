@@ -12,7 +12,7 @@ public class ProductDetailDto {
     private Double sellingPrice;
     private Double importingPrice;
     private String imageUrl;
-    private SubCategoryDto subCategory;
+    private byte[] imageByte;
     private ColorDto color;
     private SizeDto size;
     private ProductDto product;

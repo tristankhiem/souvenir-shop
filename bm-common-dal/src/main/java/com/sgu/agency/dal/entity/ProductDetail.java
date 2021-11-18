@@ -20,9 +20,8 @@ public class ProductDetail {
     private Double importingPrice;
     @Column(name = "image_url")
     private String imageUrl;
-    @ManyToOne
-    @JoinColumn(name = "sub_category_id")
-    private SubCategory subCategory;
+    @Column(name = "image_byte", length = 1000)
+    private byte[] imageByte;
     @ManyToOne
     @JoinColumn(name = "color_id")
     private Color color;
