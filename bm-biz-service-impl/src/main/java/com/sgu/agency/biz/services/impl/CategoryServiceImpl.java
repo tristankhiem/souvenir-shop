@@ -49,7 +49,7 @@ public class CategoryServiceImpl implements ICategoryService {
             List<SubCategory> subCategory = subCategoryRepository.findByIdCategory(s.getId());
             List<SubCategoryDto> subCategoryDtos = ISubCategoryDtoMapper.INSTANCE.toSubCategoryDtoList(subCategory);
 
-            s.setSubCategoryDtoList(subCategoryDtos);
+            s.setSubCategories(subCategoryDtos);
         }
 
         return categoryFullDtoList;
