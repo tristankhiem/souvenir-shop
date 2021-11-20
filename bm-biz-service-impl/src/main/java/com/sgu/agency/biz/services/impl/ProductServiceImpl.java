@@ -1,8 +1,6 @@
 package com.sgu.agency.biz.services.impl;
 
 import com.sgu.agency.common.utils.FileReaderUtil;
-import com.sgu.agency.common.utils.FileUploadUtil;
-import com.sgu.agency.common.utils.TemporaryLocalStorage;
 import com.sgu.agency.common.utils.UUIDHelper;
 import com.sgu.agency.dal.entity.Product;
 import com.sgu.agency.dal.entity.ProductDetail;
@@ -26,9 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class ProductServiceImpl implements IProductService {
@@ -124,7 +120,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public List<ProductDetailDto> getListProductDetailByProductFullId(String id) {
-        List<ProductDetail> productDetails = productDetailRepository.getListById(id);
+        List<ProductDetail> productDetails = productDetailRepository.getListByProductId(id);
         List<ProductDetailDto> productDetailDtos = IProductDetailDtoMapper.INSTANCE.toProductDetailDtos(productDetails);
         for (ProductDetailDto productDetail : productDetailDtos) {
             if (productDetail.getImageByte() != null) {
