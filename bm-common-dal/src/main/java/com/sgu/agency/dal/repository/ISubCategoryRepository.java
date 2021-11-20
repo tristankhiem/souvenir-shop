@@ -17,4 +17,7 @@ public interface ISubCategoryRepository extends JpaRepository<SubCategory, Strin
 
     @Query("select t from SubCategory t where t.category.id = ?1 ")
     List<SubCategory> findByIdCategory (String idCategory);
+
+    @Query("select t from SubCategory t where t.id = ?1 ")
+    List<SubCategory> findByIdSubCategory (String idSubCategory);
 }

@@ -3,6 +3,7 @@ package com.sgu.agency.services;
 import com.sgu.agency.dtos.request.BaseSearchDto;
 import com.sgu.agency.dtos.response.CategoryDto;
 import com.sgu.agency.dtos.response.CategoryFullDto;
+import com.sgu.agency.dtos.response.SubCategoryDto;
 
 import java.util.List;
 
@@ -16,4 +17,7 @@ public interface ICategoryService {
     CategoryDto insert(CategoryDto employeesDto);
     CategoryDto update(CategoryDto employeesDto);
     boolean deleteCategory(String id);
+
+    List<SubCategoryDto> getSubcategoryById(String id);
+    List<SubCategoryDto> getSubcategoriesByCategory(String id);
 }

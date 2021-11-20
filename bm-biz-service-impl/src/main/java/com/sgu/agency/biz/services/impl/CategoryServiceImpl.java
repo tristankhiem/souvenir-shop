@@ -110,6 +110,32 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     @Override
+    public List<SubCategoryDto> getSubcategoryById(String id) {
+        try {
+            List<SubCategory> subCategory = (List<SubCategory>) subCategoryRepository.findByIdSubCategory(id);
+            List<SubCategoryDto> subCategoryDto = ISubCategoryDtoMapper.INSTANCE.toSubCategoryDtoList(subCategory);
+            return subCategoryDto;
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            logger.error(ex.getStackTrace().toString());
+            return null;
+        }
+    }
+
+    @Override
+    public List<SubCategoryDto> getSubcategoriesByCategory(String idCategory) {
+        try {
+            List<SubCategory> subCategory = (List<SubCategory>) subCategoryRepository.findByIdCategory(idCategory);
+            List<SubCategoryDto> subCategoryDto = ISubCategoryDtoMapper.INSTANCE.toSubCategoryDtoList(subCategory);
+            return subCategoryDto;
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            logger.error(ex.getStackTrace().toString());
+            return null;
+        }
+    }
+
+    @Override
     public BaseSearchDto<List<CategoryDto>> findAll(BaseSearchDto<List<CategoryDto>> searchDto) {
         if(searchDto == null || searchDto.getCurrentPage() == -1 || searchDto.getRecordOfPage() == 0) {
             searchDto.setResult(this.findAll());
