@@ -4,6 +4,7 @@ package com.sgu.agency.controller.api.v1;
 import com.sgu.agency.configuration.security.jwt.JwtProvider;
 import com.sgu.agency.dtos.request.BaseSearchDto;
 import com.sgu.agency.dtos.response.ProductDto;
+import com.sgu.agency.dtos.response.ProductFullDto;
 import com.sgu.agency.dtos.response.ResponseDto;
 import com.sgu.agency.services.IProductService;
 import org.slf4j.Logger;
@@ -63,6 +64,13 @@ public class ProductController {
         ProductDto productDto = productService.getById(productId);
         return ResponseEntity.ok(new ResponseDto(Arrays.asList("Tải sản phẩm thành công!"), HttpStatus.OK.value(), productDto));
     }
+
+    @GetMapping("/get-full/{productId}")
+    public ResponseEntity<?> getFullById(@PathVariable String productId) {
+        ProductFullDto productFullDto = productService.getProductFullById(productId);
+        return ResponseEntity.ok(new ResponseDto(Arrays.asList("Tải sản phẩm thành công!"), HttpStatus.OK.value(), productFullDto));
+    }
+
 
     @PostMapping("/insert")
     public ResponseEntity<?> insert(@Valid @RequestBody ProductDto productDto) {

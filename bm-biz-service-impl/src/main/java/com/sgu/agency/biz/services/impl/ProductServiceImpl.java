@@ -5,9 +5,14 @@ import com.sgu.agency.common.utils.FileUploadUtil;
 import com.sgu.agency.common.utils.TemporaryLocalStorage;
 import com.sgu.agency.common.utils.UUIDHelper;
 import com.sgu.agency.dal.entity.Product;
+import com.sgu.agency.dal.entity.ProductDetail;
+import com.sgu.agency.dal.repository.IProductDetailRepository;
 import com.sgu.agency.dal.repository.IProductRepository;
 import com.sgu.agency.dtos.request.BaseSearchDto;
+import com.sgu.agency.dtos.response.ProductDetailDto;
 import com.sgu.agency.dtos.response.ProductDto;
+import com.sgu.agency.dtos.response.ProductFullDto;
+import com.sgu.agency.mappers.IProductDetailDtoMapper;
 import com.sgu.agency.mappers.IProductDtoMapper;
 import com.sgu.agency.services.IProductService;
 import org.slf4j.Logger;
@@ -31,6 +36,8 @@ public class ProductServiceImpl implements IProductService {
 
     @Autowired
     private IProductRepository productRepository;
+    @Autowired
+    private IProductDetailRepository productDetailRepository;
 
     @Transactional
     public List<ProductDto> findAll() {
@@ -113,6 +120,31 @@ public class ProductServiceImpl implements IProductService {
             productDto.setImageByte(FileReaderUtil.decompressBytes(product.getImageByte()));
         }
         return productDto;
+    }
+
+    @Override
+    public List<ProductDetailDto> getListProductDetailByProductFullId(String id) {
+        List<ProductDetail> productDetails = productDetailRepository.getListById(id);
+        List<ProductDetailDto> productDetailDtos = IProductDetailDtoMapper.INSTANCE.toProductDetailDtos(productDetails);
+        for (ProductDetailDto productDetail : productDetailDtos) {
+            if (productDetail.getImageByte() != null) {
+                productDetail.setImageByte(FileReaderUtil.decompressBytes(productDetail.getImageByte()));
+            }
+        }
+        return productDetailDtos;
+    }
+    @Override
+    public ProductFullDto getProductFullById(String id)
+    {
+        Product product = productRepository.findById(id).get();
+        ProductFullDto productFullDto = IProductDtoMapper.INSTANCE.toProductFullDto(product);
+        if (product.getImageByte() != null) {
+            productFullDto.setImageByte(FileReaderUtil.decompressBytes(product.getImageByte()));
+        }
+        //lay list product detail
+        List<ProductDetailDto> productDetailDtos = getListProductDetailByProductFullId(productFullDto.getId());
+        productFullDto.setProductDetails(productDetailDtos);
+        return productFullDto;
     }
 
     @Override

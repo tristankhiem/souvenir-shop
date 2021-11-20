@@ -12,6 +12,9 @@ public interface IProductDetailRepository extends JpaRepository<ProductDetail, S
     @Query("SELECT p FROM ProductDetail p where p.name LIKE %?1%")
     List<ProductDetail> getLikeName(String name);
 
+    @Query("SELECT p FROM ProductDetail p where p.name = ?1")
+    List<ProductDetail> getListById(String id);
+
     @Query("select p from ProductDetail p where p.name = ?1")
     ProductDetail getByName(String name);
 }
