@@ -140,5 +140,10 @@ public class CategoryController {
         return msg;
     }
 
+    @GetMapping("/get-subcategories/{id}")
+    public ResponseEntity<?> getSubcategories(@PathVariable String id) {
+        List<SubCategoryDto> subcategorysDto = categoryService.getSubcategoriesByCategory(id);
+        return ResponseEntity.ok(new ResponseDto(Arrays.asList("Lấy dữ liệu thành công"), HttpStatus.OK.value(), subcategorysDto));
+    }
 }
 
