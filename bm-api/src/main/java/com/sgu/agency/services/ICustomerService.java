@@ -14,7 +14,7 @@ public interface ICustomerService {
     List<CustomerDto> findAll();
     CustomerDto getCustomerById(String id);
     //CustomerDto getCustomerByEmail(String email);
-    CustomerDto getCustomerByEmailCompany(String email);
+    CustomerDto getCustomerByEmail(String email);
     //List<CustomerDto> getLikeName(String customerName, String agencyId);
     //List<CustomerDto> getCustomers(List<String> ids);
     CustomerDto insert(CustomerDto customerDto);

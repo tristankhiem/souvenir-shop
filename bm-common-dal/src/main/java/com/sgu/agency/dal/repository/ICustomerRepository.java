@@ -19,9 +19,6 @@ public interface ICustomerRepository extends JpaRepository<Customer, String> {
     @Query("select u from Customer u where u.email = ?1")
     Customer getCustomerByEmail(String email);
 
-    @Query("SELECT e FROM Customer e WHERE e.email = ?1")
-    Customer getCustomerByEmailCompany(String email);
-
     @Query("select t from Customer t where t.name like %?1% ")
     List<Customer> getLikeName(String customerName, String agencyId);
 

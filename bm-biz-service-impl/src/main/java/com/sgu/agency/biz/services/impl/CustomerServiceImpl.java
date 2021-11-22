@@ -62,8 +62,8 @@ public class CustomerServiceImpl implements ICustomerService {
     };
 
     @Override
-    public CustomerDto getCustomerByEmailCompany(String email) {
-        Customer customer = customersRepository.getCustomerByEmailCompany(email);
+    public CustomerDto getCustomerByEmail(String email) {
+        Customer customer = customersRepository.getCustomerByEmail(email);
         return ICustomerDtoMapper.INSTANCE.toCustomerDto(customer);
     }
 

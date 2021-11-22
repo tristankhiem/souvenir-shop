@@ -76,7 +76,7 @@ public class AuthController {
         logger.info("login api");
 
         // Validate employee account
-        CustomerDto customerDto = customerService.getCustomerByEmailCompany(user.getUsername());
+        CustomerDto customerDto = customerService.getCustomerByEmail(user.getUsername());
         if(customerDto == null || !BCryptHelper.check(user.getPassword(), customerDto.getPassword()) || customerDto.getIsValid()==false) {
             return ResponseEntity.ok(new ResponseDto(Arrays.asList("Tên đăng nhập hoặc password không đúng"), HttpStatus.BAD_GATEWAY.value(), ""));
         }

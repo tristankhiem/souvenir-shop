@@ -1,29 +1,18 @@
 package com.sgu.agency.controller.api.v1;
 
-import com.sgu.agency.common.enums.UserModelEnum;
 import com.sgu.agency.common.utils.BCryptHelper;
 import com.sgu.agency.configuration.security.jwt.JwtProvider;
-import com.sgu.agency.configuration.security.jwt.UserPrinciple;
 import com.sgu.agency.dtos.request.BaseSearchDto;
-import com.sgu.agency.dtos.request.LoginDto;
 import com.sgu.agency.dtos.response.*;
-import com.sgu.agency.dtos.response.security.UserDto;
 import com.sgu.agency.services.ICustomerService;
-import com.sgu.agency.services.IEmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,6 +42,12 @@ public class CustomerController {
         return ResponseEntity.ok(new ResponseDto(Arrays.asList("Lấy dữ liệu thành công"), HttpStatus.OK.value(), customerDto));
     }
 
+    @GetMapping("/get-by-email")
+    public ResponseEntity<?> getByEmail(@RequestParam String email) {
+        CustomerDto customerDto = customerService.getCustomerByEmail(email);
+        return ResponseEntity.ok(new ResponseDto(Arrays.asList("Lấy dữ liệu thành công"), HttpStatus.OK.value(), customerDto));
+    }
+
 
     @PostMapping("/insert")
     public ResponseEntity<?> insert(@Valid @RequestBody CustomerDto customerDto) {
@@ -70,7 +65,7 @@ public class CustomerController {
     private List<String> validateInserting(CustomerDto customer) {
         List<String> result = new ArrayList<>();
         customer.setPassword(BCryptHelper.encode(customer.getPassword()));
-        CustomerDto customerEmail = customerService.getCustomerByEmailCompany(customer.getEmail());
+        CustomerDto customerEmail = customerService.getCustomerByEmail(customer.getEmail());
         if (customerEmail != null) {
             result.add("Khách hàng đã tồn tại");
         }
@@ -93,7 +88,7 @@ public class CustomerController {
 
     private List<String> validateUpdating(CustomerDto customer) {
         List<String> result = new ArrayList<>();
-        CustomerDto customerEmail = customerService.getCustomerByEmailCompany(customer.getEmail());
+        CustomerDto customerEmail = customerService.getCustomerByEmail(customer.getEmail());
         if (customerEmail != null && !Objects.equals(customerEmail.getId(), customerEmail.getId())) {
             result.add("Email khách hàng đã tồn tại");
         }
