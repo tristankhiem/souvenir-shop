@@ -150,5 +150,18 @@ public class ProductController {
         }
 
         return result;
-    }   
+    }
+    // Truc : 21/11/2021
+    @GetMapping("/get-list/{subcategoryId}")
+    public ResponseEntity<?> getList(@PathVariable String subcategoryId) {
+        List<ProductDto> productDtoList = productService.getListBySubCategory(subcategoryId);
+        return ResponseEntity.ok(new ResponseDto(Arrays.asList("Tải sản phẩm thành công!"), HttpStatus.OK.value(), productDtoList));
+    }
+
+    @GetMapping("/get-like-name/{name}")
+    public ResponseEntity<?> SearchLikeName(@PathVariable String name) {
+        List<ProductDto> productDtos = productService.searchProductLikeName(name);
+        return ResponseEntity.ok(new ResponseDto(Arrays.asList("Tải sản phẩm thành công"), HttpStatus.OK.value(), productDtos));
+    }
+
 }

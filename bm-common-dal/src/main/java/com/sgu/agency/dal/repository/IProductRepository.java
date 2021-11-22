@@ -17,4 +17,7 @@ public interface IProductRepository extends JpaRepository<Product, String> {
 
     @Query("select p from Product p where p.subCategory.category.id = ?1")
     List<Product> getByCategory(String id);
+
+    @Query("select p from Product p where p.subCategory.id = ?1")
+    List<Product> getBySubCategory(String id);
 }

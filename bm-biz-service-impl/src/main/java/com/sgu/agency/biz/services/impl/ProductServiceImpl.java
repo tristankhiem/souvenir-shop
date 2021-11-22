@@ -54,6 +54,18 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
+    public List<ProductDto> searchProductLikeName(String searchName) {
+        List<Product> products = productRepository.getLikeName(searchName);
+        List<ProductDto> productDtos = IProductDtoMapper.INSTANCE.toProductDtoList(products);
+        for (ProductDto product : productDtos) {
+            if (product.getImageByte() != null) {
+                product.setImageByte(FileReaderUtil.decompressBytes(product.getImageByte()));
+            }
+        }
+        return productDtos;
+    }
+
+    @Override
     public List<ProductDto> getListByCategory(String categoryId) {
         List<Product> products = productRepository.getByCategory(categoryId);
         List<ProductDto> productDtos = IProductDtoMapper.INSTANCE.toProductDtoList(products);
@@ -64,6 +76,19 @@ public class ProductServiceImpl implements IProductService {
         }
         return productDtos;
     }
+
+    @Override
+    public List<ProductDto> getListBySubCategory(String subCategoryId) {
+        List<Product> products = productRepository.getBySubCategory(subCategoryId);
+        List<ProductDto> productDtos = IProductDtoMapper.INSTANCE.toProductDtoList(products);
+        for (ProductDto product : productDtos) {
+            if (product.getImageByte() != null) {
+                product.setImageByte(FileReaderUtil.decompressBytes(product.getImageByte()));
+            }
+        }
+        return productDtos;
+    }
+
 
     @Override
     public BaseSearchDto<List<ProductDto>> findAll(BaseSearchDto<List<ProductDto>> searchDto) {

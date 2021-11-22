@@ -12,7 +12,10 @@ import java.util.List;
 public interface IProductService {
     List<ProductDto> findAll();
     List<ProductDto> getLikeName(String searchName);
+    List<ProductDto> searchProductLikeName(String searchName);
+
     List<ProductDto> getListByCategory(String categoryId);
+    List<ProductDto> getListBySubCategory(String subCategoryId);
     BaseSearchDto<List<ProductDto>> findAll(BaseSearchDto<List<ProductDto>> searchDto);
     ProductDto insert(ProductDto productDto);
     ProductDto getById(String id);
