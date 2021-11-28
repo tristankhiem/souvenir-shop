@@ -18,9 +18,8 @@ public class ImportingOrder {
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employees employee;
-    @Enumerated(EnumType.STRING)
     @Column
-    private OrderStatusEnum status;
+    private String status;
     @Column
     private Double total;
     @Column(name = "invoice_date")

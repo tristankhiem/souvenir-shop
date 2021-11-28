@@ -3,13 +3,16 @@ package com.sgu.agency.biz.services.impl;
 import com.sgu.agency.common.utils.UUIDHelper;
 import com.sgu.agency.dal.dao.IEmployeeDao;
 import com.sgu.agency.dal.entity.Customer;
+import com.sgu.agency.dal.entity.Product;
 import com.sgu.agency.dal.entity.Supplier;
 import com.sgu.agency.dal.repository.ICustomerRepository;
 import com.sgu.agency.dal.repository.ISupplierRepository;
 import com.sgu.agency.dtos.request.BaseSearchDto;
+import com.sgu.agency.dtos.response.ProductDto;
 import com.sgu.agency.dtos.response.SupplierDto;
 import com.sgu.agency.dtos.response.SupplierDto;
 import com.sgu.agency.mappers.ICustomerDtoMapper;
+import com.sgu.agency.mappers.IProductDtoMapper;
 import com.sgu.agency.mappers.ISupplierDtoMapper;
 import com.sgu.agency.services.ICustomerService;
 import com.sgu.agency.services.ISupplierService;
@@ -124,6 +127,11 @@ public class SupplierServiceImpl implements ISupplierService {
             return false;
         }
     };
+    @Override
+    public List<SupplierDto> getLikeName(String searchName) {
+        List<Supplier> suppliers = supplierRepository.getLikeName(searchName);
+        return ISupplierDtoMapper.INSTANCE.toSupplierDtoList(suppliers);
+    }
 //    @Override
 //    @Transactional
 //    public CustomerDto changeAccountState(CustomerDto customerDto) {

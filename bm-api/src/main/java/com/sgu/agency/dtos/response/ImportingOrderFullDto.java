@@ -1,12 +1,12 @@
 package com.sgu.agency.dtos.response;
 
-import com.sgu.agency.common.enums.OrderStatusEnum;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
-public class ImportingOrderDto {
+public class ImportingOrderFullDto {
     private String id;
     private SupplierDto supplier;
     private EmployeesDto employee;
@@ -14,4 +14,5 @@ public class ImportingOrderDto {
     private Double total;
     private Date invoiceDate;
     private Date deliveryDate;
+    private List<ImportingTransactionDto> importingTransactions;
 }

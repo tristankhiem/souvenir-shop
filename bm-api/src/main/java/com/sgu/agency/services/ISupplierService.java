@@ -16,7 +16,7 @@ public interface ISupplierService {
     SupplierDto getSupplierById(String id);
 //    EmployeesDto getEmployeeByEmail(String email);
 //    EmployeesDto getEmployeeByEmailCompany(String email);
-//    List<EmployeesDto> getLikeName(String employeeName, String agencyId);
+    List<SupplierDto> getLikeName(String name);
 //    List<EmployeesDto> getEmployees(List<String> ids);
       SupplierDto insert(SupplierDto supplierDto);
       SupplierDto update(SupplierDto supplierDto);

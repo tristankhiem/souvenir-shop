@@ -4,9 +4,7 @@ import com.sgu.agency.common.utils.BCryptHelper;
 import com.sgu.agency.configuration.security.jwt.JwtProvider;
 import com.sgu.agency.dal.entity.Supplier;
 import com.sgu.agency.dtos.request.BaseSearchDto;
-import com.sgu.agency.dtos.response.CustomerDto;
-import com.sgu.agency.dtos.response.ResponseDto;
-import com.sgu.agency.dtos.response.SupplierDto;
+import com.sgu.agency.dtos.response.*;
 import com.sgu.agency.services.ICustomerService;
 import com.sgu.agency.services.ISupplierService;
 import org.slf4j.Logger;
@@ -111,7 +109,10 @@ public class SupplierController {
         return msg;
     }
 
-
-
+    @GetMapping("/get-like-name")
+    public ResponseEntity<?> getLikeName(@RequestParam String name) {
+        List<SupplierDto> supplierDtos = supplierService.getLikeName(name);
+        return ResponseEntity.ok(new ResponseDto(Arrays.asList("Lấy dữ liệu thành công"), HttpStatus.OK.value(), supplierDtos));
+    }
 
 }
