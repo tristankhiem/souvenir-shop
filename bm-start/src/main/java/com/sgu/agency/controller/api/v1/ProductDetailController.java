@@ -5,6 +5,7 @@ import com.sgu.agency.configuration.security.jwt.JwtProvider;
 import com.sgu.agency.dtos.request.BaseSearchDto;
 import com.sgu.agency.dtos.response.ProductDetailDto;
 import com.sgu.agency.dtos.response.ResponseDto;
+import com.sgu.agency.dtos.response.SupplierDto;
 import com.sgu.agency.services.IProductDetailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,5 +137,7 @@ public class ProductDetailController {
         }
 
         return result;
-    }   
+    }
+
+
 }

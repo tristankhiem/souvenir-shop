@@ -10,7 +10,7 @@ public class ImportingOrderDto {
     private String id;
     private SupplierDto supplier;
     private EmployeesDto employee;
-    private OrderStatusEnum status;
+    private String status;
     private Double total;
     private Date invoiceDate;
     private Date deliveryDate;
