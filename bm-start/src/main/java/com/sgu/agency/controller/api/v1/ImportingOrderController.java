@@ -37,23 +37,38 @@ public class ImportingOrderController extends BaseController {
         return ResponseEntity.ok(new ResponseDto(Arrays.asList("Lấy dữ liệu thành công"), HttpStatus.OK.value(), result));
     }
 
-//    Lưu ý: Khi tạo phiếu nhập hàng thì gán Employee bằng hàm this.getCurrentEmployee() để lấy thông tin nhân viên đang đăng nhập gán vào
-//        nội dung phiếu.
-@PostMapping("/insert")
-public ResponseEntity<?> insert(@Valid @RequestBody ImportingOrderFullDto importingOrderFullDto) {
-    List<String> errMessages = validateInsert(importingOrderFullDto);
-    if(errMessages.size() > 0) {
-        return ResponseEntity.ok(new ResponseDto(errMessages, HttpStatus.BAD_REQUEST.value(), ""));
+    @PostMapping("/insert")
+    public ResponseEntity<?> insert(@Valid @RequestBody ImportingOrderFullDto importingOrderFullDto) {
+        List<String> errMessages = validateInsert(importingOrderFullDto);
+        if(errMessages.size() > 0) {
+            return ResponseEntity.ok(new ResponseDto(errMessages, HttpStatus.BAD_REQUEST.value(), ""));
+        }
+
+        importingOrderFullDto.setEmployee(this.getCurrentEmployee());
+        ImportingOrderFullDto importingOrderFull = importingOderService.insert(importingOrderFullDto);
+
+
+        ResponseEntity<?> res = importingOrderFull != null  ? ResponseEntity.ok(new ResponseDto(Arrays.asList("Lưu phiếu nhập thành công"), HttpStatus.OK.value(), importingOrderFull))
+                : ResponseEntity.ok(new ResponseDto(Arrays.asList("Lỗi lưu phiếu nhập"),  HttpStatus.BAD_REQUEST.value(), ""));
+        return res;
     }
 
-    importingOrderFullDto.setEmployee(this.getCurrentEmployee());
-    ImportingOrderFullDto importingOrderFull = importingOderService.insert(importingOrderFullDto);
+    @PutMapping("/update")
+    public ResponseEntity<?> update(@Valid @RequestBody ImportingOrderFullDto importingOrderFullDto) {
+        List<String> errMessages = validateInsert(importingOrderFullDto);
+        if(errMessages.size() > 0) {
+            return ResponseEntity.ok(new ResponseDto(errMessages, HttpStatus.BAD_REQUEST.value(), ""));
+        }
+
+        importingOrderFullDto.setEmployee(this.getCurrentEmployee());
+        ImportingOrderFullDto importingOrderFull = importingOderService.update(importingOrderFullDto);
 
 
-    ResponseEntity<?> res = importingOrderFull != null  ? ResponseEntity.ok(new ResponseDto(Arrays.asList("Lưu sản phẩm thành công"), HttpStatus.OK.value(), importingOrderFull))
-            : ResponseEntity.ok(new ResponseDto(Arrays.asList("Lỗi lưu sản phẩm"),  HttpStatus.BAD_REQUEST.value(), ""));
-    return res;
-}
+        ResponseEntity<?> res = importingOrderFull != null  ? ResponseEntity.ok(new ResponseDto(Arrays.asList("Lưu phiếu nhập thành công"), HttpStatus.OK.value(), importingOrderFull))
+                : ResponseEntity.ok(new ResponseDto(Arrays.asList("Lỗi lưu phiếu nhập"),  HttpStatus.BAD_REQUEST.value(), ""));
+        return res;
+    }
+
     private List<String> validateInsert(ImportingOrderFullDto importingOrderFullDto) {
         List<String> result = new ArrayList<>();
 //        ImportingOrderFullDto productName = importingOderService.getByName(productDto.getName());

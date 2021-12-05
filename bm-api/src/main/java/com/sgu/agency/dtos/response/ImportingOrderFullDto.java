@@ -15,4 +15,12 @@ public class ImportingOrderFullDto {
     private Date invoiceDate;
     private Date deliveryDate;
     private List<ImportingTransactionDto> importingTransactions;
+
+    public void calculateTotal() {
+        double total = 0d;
+        for (ImportingTransactionDto transactionDto : importingTransactions) {
+            total += transactionDto.getPrice() * transactionDto.getQuantity();
+        }
+        this.total = total;
+    }
 }

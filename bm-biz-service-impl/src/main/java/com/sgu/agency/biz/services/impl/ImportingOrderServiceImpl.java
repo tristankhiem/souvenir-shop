@@ -1,15 +1,11 @@
 package com.sgu.agency.biz.services.impl;
-import com.sgu.agency.common.utils.FileReaderUtil;
 import com.sgu.agency.common.utils.UUIDHelper;
-import com.sgu.agency.dal.dao.IEmployeeDao;
 import com.sgu.agency.dal.entity.*;
 import com.sgu.agency.dal.repository.*;
 import com.sgu.agency.dtos.request.BaseSearchDto;
 import com.sgu.agency.dtos.response.*;
 import com.sgu.agency.mappers.*;
-import com.sgu.agency.services.IEmployeeService;
 import com.sgu.agency.services.IImportingOrderService;
-import com.sgu.agency.services.IProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +29,7 @@ public class ImportingOrderServiceImpl implements IImportingOrderService {
     @Autowired
     private IImportingTransactionRepository importingTransactionRepository;
     @Autowired
-    private ProductServiceImpl productService;
-    @Autowired
-    private ProductDetailServiceImpl productDetailService;
-    @Autowired
     private IProductDetailRepository productDetailRepository;
-
-    private ProductDetailDto productDetailDto;
-    private ProductDetail productDetail;
 
     @Override
     @Transactional
@@ -74,45 +63,94 @@ public class ImportingOrderServiceImpl implements IImportingOrderService {
         List<ImportingTransaction> importingTransactions = importingTransactionRepository.getListByImportingOrderId(id);
         return importingTransactions;
     }
+
     @Override
     @Transactional
     public ImportingOrderFullDto insert(ImportingOrderFullDto importingOrderFullDto) {
         try {
-            //importingOrder
+            importingOrderFullDto.calculateTotal();
             importingOrderFullDto.setId(UUIDHelper.generateType4UUID().toString());
             ImportingOrder importing = IImportingOrderDtoMapper.INSTANCE.toImportingOrder(importingOrderFullDto);
-            //importingTransaction + save +update quantity
+            importing = this.importingOrderRepository.save(importing);
+
             List<ImportingTransaction> importingTransactions = IImportingTransactionDtoMapper
                     .INSTANCE.toImportingTransactions(importingOrderFullDto.getImportingTransactions());
 
-            Double total=0.0;
-            for (ImportingTransaction importingTransaction :importingTransactions)
+            for (ImportingTransaction importingTransaction : importingTransactions)
             {
                 importingTransaction.setId(UUIDHelper.generateType4UUID().toString());
                 importingTransaction.setImportingOrder(importing);
 
-                productDetailDto = productDetailService.getById(importingTransaction.getProductDetail().getId());
+                ProductDetail productDetail = productDetailRepository.getOne(importingTransaction.getProductDetail().getId());
+                ProductDetailDto productDetailDto = IProductDetailDtoMapper.INSTANCE.toProductDetailDto(productDetail);
                 productDetailDto.setQuantity(productDetailDto.getQuantity() + importingTransaction.getQuantity());
-                 productDetail =IProductDetailDtoMapper.INSTANCE.toProductDetail(productDetailDto);
+                productDetailDto.setImportingPrice(importingTransaction.getPrice());
 
-                 total= importingTransaction.getPrice() + total;
-                productDetailRepository.save(productDetail);
-                importingTransactionRepository.save(importingTransaction);
+                Product product = productRepository.getOne(importingTransaction.getProductDetail().getProduct().getId());
+                product.setQuantity(product.getQuantity() + importingTransaction.getQuantity());
+                this.productRepository.save(product);
+
+                this.productDetailRepository.save(IProductDetailDtoMapper.INSTANCE.toProductDetail(productDetailDto));
             }
-            // save importing order +
-            importing.setTotal(total);
-            importingOrderRepository.save(importing);
-            //  importingTransaction -> importingTransactionDTO
-            importingOrderFullDto.setImportingTransactions(IImportingTransactionDtoMapper.
-                    INSTANCE.toImportingTransactionDtos(importingTransactions));
+            this.importingTransactionRepository.saveAll(importingTransactions);
 
-            //return dto
-            ImportingOrderFullDto createdImportingOrderFullDto = importingOrderFullDto;
-
-
-            return createdImportingOrderFullDto;
+            return importingOrderFullDto;
 
         }catch (Exception ex) {
+            logger.error(ex.getMessage());
+            logger.error(ex.getStackTrace().toString());
+            return null;
+        }
+    }
+
+    @Override
+    @Transactional
+    public ImportingOrderFullDto update(ImportingOrderFullDto importingOrderFullDto) {
+        try {
+            importingOrderFullDto.calculateTotal();
+            ImportingOrder importing = IImportingOrderDtoMapper.INSTANCE.toImportingOrder(importingOrderFullDto);
+            importing = this.importingOrderRepository.save(importing);
+
+            // reduce quantity
+            List<ImportingTransaction> oldTrans = importingTransactionRepository.getListByImportingOrderId(importingOrderFullDto.getId());
+            for (ImportingTransaction importingTransaction : oldTrans)
+            {
+                ProductDetail productDetail = productDetailRepository.getOne(importingTransaction.getProductDetail().getId());
+                ProductDetailDto productDetailDto = IProductDetailDtoMapper.INSTANCE.toProductDetailDto(productDetail);
+                productDetailDto.setQuantity(productDetailDto.getQuantity() - importingTransaction.getQuantity());
+                productDetailDto.setImportingPrice(importingTransaction.getPrice());
+
+                Product product = productRepository.getOne(importingTransaction.getProductDetail().getProduct().getId());
+                product.setQuantity(product.getQuantity() - importingTransaction.getQuantity());
+                this.productRepository.save(product);
+
+                this.productDetailRepository.save(IProductDetailDtoMapper.INSTANCE.toProductDetail(productDetailDto));
+            }
+            this.importingTransactionRepository.deleteAll(oldTrans);
+
+            // save - add new quantity
+            List<ImportingTransaction> importingTransactions = IImportingTransactionDtoMapper
+                    .INSTANCE.toImportingTransactions(importingOrderFullDto.getImportingTransactions());
+            for (ImportingTransaction importingTransaction : importingTransactions)
+            {
+                importingTransaction.setId(UUIDHelper.generateType4UUID().toString());
+                importingTransaction.setImportingOrder(importing);
+
+                ProductDetail productDetail = productDetailRepository.getOne(importingTransaction.getProductDetail().getId());
+                ProductDetailDto productDetailDto = IProductDetailDtoMapper.INSTANCE.toProductDetailDto(productDetail);
+                productDetailDto.setQuantity(productDetailDto.getQuantity() + importingTransaction.getQuantity());
+                productDetailDto.setImportingPrice(importingTransaction.getPrice());
+
+                Product product = productRepository.getOne(importingTransaction.getProductDetail().getProduct().getId());
+                product.setQuantity(product.getQuantity() + importingTransaction.getQuantity());
+                this.productRepository.save(product);
+
+                this.productDetailRepository.save(IProductDetailDtoMapper.INSTANCE.toProductDetail(productDetailDto));
+            }
+            this.importingTransactionRepository.saveAll(importingTransactions);
+
+            return importingOrderFullDto;
+        } catch (Exception ex) {
             logger.error(ex.getMessage());
             logger.error(ex.getStackTrace().toString());
             return null;
@@ -124,9 +162,18 @@ public class ImportingOrderServiceImpl implements IImportingOrderService {
     public boolean delete(String id) {
         try {
             importingOrderRepository.deleteById(id);
-//            importingTransactionRepository.deleteById();
-//           ImportingOrder importingOrder = importingOrderRepository.getOne(id);
             List <ImportingTransaction> importingTransactions = getListImportingTransactionByImportingOrderId(id);
+            for (ImportingTransaction importingTransaction : importingTransactions) {
+                ProductDetail productDetail = productDetailRepository.getOne(importingTransaction.getProductDetail().getId());
+                ProductDetailDto productDetailDto = IProductDetailDtoMapper.INSTANCE.toProductDetailDto(productDetail);
+                productDetailDto.setQuantity(productDetailDto.getQuantity() - importingTransaction.getQuantity());
+
+                Product product = productRepository.getOne(importingTransaction.getProductDetail().getProduct().getId());
+                product.setQuantity(product.getQuantity() - importingTransaction.getQuantity());
+                this.productRepository.save(product);
+
+                this.productDetailRepository.save(IProductDetailDtoMapper.INSTANCE.toProductDetail(productDetailDto));
+            }
             importingTransactionRepository.deleteAll(importingTransactions);
 
             return true;
@@ -149,14 +196,3 @@ public class ImportingOrderServiceImpl implements IImportingOrderService {
         return importingOrderFullDto;
     }
 }
-
-// bo: ImportingOrder importingOrder = getImportingOrderById(importingOrderFullDto.getId());
-// bo:  List<ImportingTransaction> importingTransactions = getListImportingTransactionByImportingOrderId(importingOrderFullDto.getId());
-//     importingOrderRepository.save(tmpImportingOrder);
-//         importingTransactionRepository.save(importingTransaction);
-
-
-//                 productDto = productService.getById(importingTransaction.getProductDetail().getId());
-//                productDto.setQuantity(productDto.getQuantity() + importingTransaction.getQuantity());
-//                Product product=IProductDtoMapper.INSTANCE.toProduct(productDto);
-//                productRepository.save(product);

@@ -11,6 +11,7 @@ public interface IImportingOrderService {
     BaseSearchDto<List<ImportingOrderDto>> findAll(BaseSearchDto<List<ImportingOrderDto>> searchDto);
     List<ImportingOrderDto> findAll();
     ImportingOrderFullDto insert(ImportingOrderFullDto importingOrderFullDtoDto);
+    ImportingOrderFullDto update(ImportingOrderFullDto importingOrderFullDto);
     boolean delete(String id);
     ImportingOrderFullDto getImportingOrderFullById(String id);
     List<ImportingTransaction> getListImportingTransactionByImportingOrderId (String id);
