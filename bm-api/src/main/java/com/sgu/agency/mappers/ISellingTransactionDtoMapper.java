@@ -15,5 +15,6 @@ public interface ISellingTransactionDtoMapper {
     SellingTransaction toSellingTransaction(SellingTransactionDto categoryDto);
 
     List<SellingTransactionDto> toSellingTransactionDtos(List<SellingTransaction> categories);
+    List<SellingTransaction> toSellingTransactions(List<SellingTransactionDto> categories);
 
 }

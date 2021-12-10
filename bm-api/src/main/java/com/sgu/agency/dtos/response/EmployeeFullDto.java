@@ -40,6 +40,6 @@ public class EmployeeFullDto {
             }
         }
 
-        return new UserDto(this.name, this.email, this.password, permissions, UserModelEnum.EMPLOYEE, null);
+        return new UserDto(this.id, this.name, this.email, this.password, permissions, UserModelEnum.EMPLOYEE, null);
     }
 }

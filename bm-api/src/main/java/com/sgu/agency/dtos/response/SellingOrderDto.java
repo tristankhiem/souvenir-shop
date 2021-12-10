@@ -10,8 +10,9 @@ public class SellingOrderDto {
     private String id;
     private CustomerDto customer;
     private String address;
-    private OrderStatusEnum status;
+    private String status;
     private Double total;
     private Date invoiceDate;
     private Date deliveryDate;
+    private String receivePerson;
 }

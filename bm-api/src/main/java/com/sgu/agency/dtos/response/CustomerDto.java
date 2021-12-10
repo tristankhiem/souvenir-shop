@@ -40,6 +40,6 @@ public class CustomerDto {
         //   }
         //}
 
-        return new UserDto(this.name, this.email, this.password, new ArrayList<>(), UserModelEnum.CUSTOMER, null);
+        return new UserDto(this.id, this.name, this.email, this.password, new ArrayList<>(), UserModelEnum.CUSTOMER, null);
     }
 }

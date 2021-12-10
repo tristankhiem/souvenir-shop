@@ -17,13 +17,17 @@ public class SellingOrder {
     private Customer customer;
     @Column
     private String address;
-    @Enumerated(EnumType.STRING)
     @Column
-    private OrderStatusEnum status;
+    private String status;
     @Column
     private Double total;
     @Column(name = "invoice_date")
     private Date invoiceDate;
     @Column(name = "delivery_date")
     private Date deliveryDate;
+    @Column(name = "receive_person")
+    private String receivePerson;
+
+    @PrePersist
+    protected void onCreate() { invoiceDate = new Date(); }
 }
