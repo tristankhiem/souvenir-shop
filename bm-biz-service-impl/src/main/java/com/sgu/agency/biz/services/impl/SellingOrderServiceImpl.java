@@ -62,6 +62,8 @@ public class SellingOrderServiceImpl implements ISellingOrderService {
             return searchDto;
         }
 
+        searchDto.setSortBy("invoiceDate");
+        searchDto.setSortAsc(false);
         Sort sort = null;
         if(searchDto.getSortBy() != null && !searchDto.getSortBy().isEmpty()) {
             sort = searchDto.isSortAsc() ? Sort.by(Sort.Direction.ASC, searchDto.getSortBy()) : Sort.by(Sort.Direction.DESC, searchDto.getSortBy());
@@ -101,11 +103,11 @@ public class SellingOrderServiceImpl implements ISellingOrderService {
 
                 ProductDetail productDetail = productDetailRepository.getOne(sellingTransaction.getProductDetail().getId());
                 ProductDetailDto productDetailDto = IProductDetailDtoMapper.INSTANCE.toProductDetailDto(productDetail);
-                productDetailDto.setQuantity(productDetailDto.getQuantity() + sellingTransaction.getQuantity());
+                productDetailDto.setQuantity(productDetailDto.getQuantity() - sellingTransaction.getQuantity());
                 productDetailDto.setSellingPrice(sellingTransaction.getPrice());
 
                 Product product = productRepository.getOne(sellingTransaction.getProductDetail().getProduct().getId());
-                product.setQuantity(product.getQuantity() + sellingTransaction.getQuantity());
+                product.setQuantity(product.getQuantity() - sellingTransaction.getQuantity());
                 this.productRepository.save(product);
 
                 this.productDetailRepository.save(IProductDetailDtoMapper.INSTANCE.toProductDetail(productDetailDto));
@@ -135,11 +137,11 @@ public class SellingOrderServiceImpl implements ISellingOrderService {
             {
                 ProductDetail productDetail = productDetailRepository.getOne(sellingTransaction.getProductDetail().getId());
                 ProductDetailDto productDetailDto = IProductDetailDtoMapper.INSTANCE.toProductDetailDto(productDetail);
-                productDetailDto.setQuantity(productDetailDto.getQuantity() - sellingTransaction.getQuantity());
+                productDetailDto.setQuantity(productDetailDto.getQuantity() + sellingTransaction.getQuantity());
                 productDetailDto.setSellingPrice(sellingTransaction.getPrice());
 
                 Product product = productRepository.getOne(sellingTransaction.getProductDetail().getProduct().getId());
-                product.setQuantity(product.getQuantity() - sellingTransaction.getQuantity());
+                product.setQuantity(product.getQuantity() + sellingTransaction.getQuantity());
                 this.productRepository.save(product);
 
                 this.productDetailRepository.save(IProductDetailDtoMapper.INSTANCE.toProductDetail(productDetailDto));
@@ -156,11 +158,11 @@ public class SellingOrderServiceImpl implements ISellingOrderService {
 
                 ProductDetail productDetail = productDetailRepository.getOne(sellingTransaction.getProductDetail().getId());
                 ProductDetailDto productDetailDto = IProductDetailDtoMapper.INSTANCE.toProductDetailDto(productDetail);
-                productDetailDto.setQuantity(productDetailDto.getQuantity() + sellingTransaction.getQuantity());
+                productDetailDto.setQuantity(productDetailDto.getQuantity() - sellingTransaction.getQuantity());
                 productDetailDto.setSellingPrice(sellingTransaction.getPrice());
 
                 Product product = productRepository.getOne(sellingTransaction.getProductDetail().getProduct().getId());
-                product.setQuantity(product.getQuantity() + sellingTransaction.getQuantity());
+                product.setQuantity(product.getQuantity() - sellingTransaction.getQuantity());
                 this.productRepository.save(product);
 
                 this.productDetailRepository.save(IProductDetailDtoMapper.INSTANCE.toProductDetail(productDetailDto));
@@ -184,10 +186,10 @@ public class SellingOrderServiceImpl implements ISellingOrderService {
             for (SellingTransaction sellingTransaction : sellingTransactions) {
                 ProductDetail productDetail = productDetailRepository.getOne(sellingTransaction.getProductDetail().getId());
                 ProductDetailDto productDetailDto = IProductDetailDtoMapper.INSTANCE.toProductDetailDto(productDetail);
-                productDetailDto.setQuantity(productDetailDto.getQuantity() - sellingTransaction.getQuantity());
+                productDetailDto.setQuantity(productDetailDto.getQuantity() + sellingTransaction.getQuantity());
 
                 Product product = productRepository.getOne(sellingTransaction.getProductDetail().getProduct().getId());
-                product.setQuantity(product.getQuantity() - sellingTransaction.getQuantity());
+                product.setQuantity(product.getQuantity() + sellingTransaction.getQuantity());
                 this.productRepository.save(product);
 
                 this.productDetailRepository.save(IProductDetailDtoMapper.INSTANCE.toProductDetail(productDetailDto));
@@ -228,6 +230,9 @@ public class SellingOrderServiceImpl implements ISellingOrderService {
             SellingOrderFullDto sellingOrderFullDto = getSellingOrderFullById(sellingOrder.getId());
             result.add(sellingOrderFullDto);
         }
+
+
+        result.sort(Comparator.comparing(SellingOrderFullDto::getInvoiceDate).reversed());
 
         return result;
     }
