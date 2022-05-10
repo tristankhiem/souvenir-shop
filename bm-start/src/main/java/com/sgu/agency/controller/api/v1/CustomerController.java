@@ -64,7 +64,7 @@ public class CustomerController {
     }
     private List<String> validateInserting(CustomerDto customer) {
         List<String> result = new ArrayList<>();
-        customer.setPassword(BCryptHelper.encode(customer.getPassword()));
+        customer.setPassword(BCryptHelper.encrypt(customer.getPassword()));
         CustomerDto customerEmail = customerService.getCustomerByEmail(customer.getEmail());
         if (customerEmail != null) {
             result.add("Khách hàng đã tồn tại");

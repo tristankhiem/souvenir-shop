@@ -50,7 +50,7 @@ public class AuthController {
 
         // Validate employee account
         EmployeeFullDto employeesDto = employeeService.getEmployeeFull(user.getUsername());
-        if(employeesDto == null || !BCryptHelper.check(user.getPassword(), employeesDto.getPassword())) {
+        if(employeesDto == null || !BCryptHelper.checkData(user.getPassword(), employeesDto.getPassword())) {
             return ResponseEntity.ok(new ResponseDto(Arrays.asList("Tên đăng nhập hoặc password không đúng"), HttpStatus.BAD_GATEWAY.value(), ""));
         }
 
@@ -77,7 +77,7 @@ public class AuthController {
 
         // Validate employee account
         CustomerDto customerDto = customerService.getCustomerByEmail(user.getUsername());
-        if(customerDto == null || !BCryptHelper.check(user.getPassword(), customerDto.getPassword()) || customerDto.getIsValid()==false) {
+        if(customerDto == null || !BCryptHelper.checkData(user.getPassword(), customerDto.getPassword()) || customerDto.getIsValid()==false) {
             return ResponseEntity.ok(new ResponseDto(Arrays.asList("Tên đăng nhập hoặc password không đúng"), HttpStatus.BAD_GATEWAY.value(), ""));
         }
 

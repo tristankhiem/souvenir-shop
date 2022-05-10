@@ -102,7 +102,7 @@ public class EmployeeController {
 
     private List<String> validateInserting(EmployeesDto employee) {
         List<String> result = new ArrayList<>();
-        employee.setPassword(BCryptHelper.encode(employee.getPassword()));
+        employee.setPassword(BCryptHelper.encrypt(employee.getPassword()));
         EmployeesDto employeesEmail = employeeService.getEmployeeByEmailCompany(employee.getEmail());
         if (employeesEmail != null) {
             result.add("Email nhân viên đã tồn tại");

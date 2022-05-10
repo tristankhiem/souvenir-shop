@@ -1,5 +1,6 @@
 package com.sgu.agency.biz.services.impl;
 
+import com.sgu.agency.common.utils.BCryptHelper;
 import com.sgu.agency.common.utils.FileReaderUtil;
 import com.sgu.agency.common.utils.UUIDHelper;
 import com.sgu.agency.dal.dao.ISellingOrderDao;
@@ -75,6 +76,10 @@ public class SellingOrderServiceImpl implements ISellingOrderService {
         searchDto.setTotalRecords(page.getTotalElements());
         searchDto.setResult(ISellingOrderDtoMapper.INSTANCE.toSellingOrderDtos(page.getContent()));
 
+        for (SellingOrderDto s : searchDto.getResult()) {
+            s.setAddress(BCryptHelper.decrypt(s.getAddress()));
+            s.setReceivePerson(BCryptHelper.decrypt(s.getReceivePerson()));
+        }
         return searchDto;
     }
 
@@ -217,6 +222,9 @@ public class SellingOrderServiceImpl implements ISellingOrderService {
                 product.getProductDetail().setImageByte(FileReaderUtil.decompressBytes(product.getProductDetail().getImageByte()));
             }
         }
+
+        sellingOrderFullDto.setAddress(BCryptHelper.decrypt(sellingOrderFullDto.getAddress()));
+        sellingOrderFullDto.setReceivePerson(BCryptHelper.decrypt(sellingOrderFullDto.getReceivePerson()));
 
         return sellingOrderFullDto;
     }

@@ -186,7 +186,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         try {
             // get Employee by userName
             Employees employees = employeesRepository.getEmployeeByEmail(userName);
-            employees.setPassword(BCryptHelper.encode(changePasswordDto.getNewPassword()));
+            employees.setPassword(BCryptHelper.encrypt(changePasswordDto.getNewPassword()));
 
             Employees updatedEmployee = employeesRepository.save(employees);
             return IEmployeesDtoMapper.INSTANCE.toEmployeesDto(updatedEmployee);
@@ -226,7 +226,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         try {
             Employees employees = employeesRepository.getOne(employeeId);
             String newPassword = RandomTextHelper.generateRandomPassword(7);
-            String cryptPassword = BCryptHelper.encode(newPassword);
+            String cryptPassword = BCryptHelper.encrypt(newPassword);
             employees.setPassword(cryptPassword);
             Employees updatedEmployee = employeesRepository.save(employees);
             return newPassword;

@@ -2,6 +2,7 @@ package com.sgu.agency.controller.api.v1;
 
 
 import com.sgu.agency.biz.services.impl.SellingOrderServiceImpl;
+import com.sgu.agency.common.utils.BCryptHelper;
 import com.sgu.agency.configuration.security.jwt.JwtProvider;
 import com.sgu.agency.dtos.request.BaseSearchDto;
 import com.sgu.agency.dtos.response.*;
@@ -73,10 +74,8 @@ public class SellingOrderController extends BaseController {
 
     private List<String> validateInsert(SellingOrderFullDto sellingOrderFullDto) {
         List<String> result = new ArrayList<>();
-//        SellingOrderFullDto productName = sellingOderService.getByName(productDto.getName());
-//        if (productName != null) {
-//            result.add("Tên sản phẩm đã tồn tại");
-//        }
+        sellingOrderFullDto.setAddress(BCryptHelper.encrypt(sellingOrderFullDto.getAddress()));
+        sellingOrderFullDto.setReceivePerson(BCryptHelper.encrypt(sellingOrderFullDto.getReceivePerson()));
 
         return result;
     }
